@@ -8,10 +8,13 @@ library(stringr)
 library(hrbrthemes)
 library(shinyWidgets)
 
-setwd("/home/vlado/maksRepo")
+
+
 tmap_mode("view")
 options(scipen=999)
-hr <- st_read("fileZaCrtanjeHrv/zupanije.shp")
+hr <- st_read("fileZaCrtanje2/zupanije.shp")
+zupanije <- c("Grad Zagreb","Medimurska","Krapinsko-zagorska","Varazdinska","Viroviticko-podravska","Pozesko-slavonska","Koprivnicko-krizevacka","Bjelovarsko-bilogorska","Vukovarsko-srijemska","Brodsko-posavska","Karlovacka","Osjecko-baranjska","Sisacko-moslavacka","Licko-senjska","Istarska","Zagrebacka","Sibensko-kninska","Dubrovacko-neretvanska","Splitsko-dalmatinska","Primorsko-goranska","Zadarska")
+hr$Zupanija <- zupanije
 
 ui <- fluidPage(
   setBackgroundColor(
@@ -21,28 +24,28 @@ ui <- fluidPage(
   ),
   titlePanel(title=h1("CroStats", align="center",style = "font-size:60px")),
   sidebarLayout(
-  mainPanel(
-    tmapOutput(outputId = "map", width = "100%", height = 900)
-  ),
-  sidebarPanel(
-    h1("Zagrebačka županija"),
-    hr(),
-    plotOutput("plot"),
-    br(),br(),br(),
-    h2("Fun Fact 1"),
-    helpText("Serman je jedina vredela od svih"),
-    h2("Fun Fact 2"),
-    helpText("Serman je jedina vredela od svih"),
-    h2("Fun Fact 3"),
-    helpText("Serman je jedina vredela od svih")
+    mainPanel(
+      tmapOutput(outputId = "map", width = "100%", height = 900)
+    ),
+    sidebarPanel(
+      h1("Zagrebacka zupanija"),
+      hr(),
+      plotOutput("plot"),
+      br(),br(),br(),
+      h2("Fun Fact 1"),
+      helpText("Serman je jedina vredela od svih"),
+      h2("Fun Fact 2"),
+      helpText("Serman je jedina vredela od svih"),
+      h2("Fun Fact 3"),
+      helpText("Serman je jedina vredela od svih")
+    )
   )
-)
 )
 
 server <- function(input, output, session) {
   
   output$map <- renderTmap({
-    tm_shape(hr) + tm_fill("NAME_1") + tm_borders() +tm_layout(title="Republika Hrvatska")
+    tm_shape(hr) + tm_fill("Zupanija") + tm_borders() +tm_layout(title="Republika Hrvatska")
   })
   
   observeEvent(input$map_shape_click, {
@@ -50,11 +53,11 @@ server <- function(input, output, session) {
     click <- input$map_shape_click
     
     print(click)
-
+    
   })
   
   output$plot <- renderPlot(plot(mtcars$wt, mtcars$mpg))
-
+  
 }
 
 shinyApp(ui = ui, server = server)
