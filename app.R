@@ -8,10 +8,10 @@ library(stringr)
 library(hrbrthemes)
 library(shinyWidgets)
 
-setwd("/Users/franbelac/Downloads")
+setwd("/home/vlado/maksRepo")
 tmap_mode("view")
 options(scipen=999)
-hr <- st_read("fileZaCrtanjeHrv/gadm40_HRV_1.shp")
+hr <- st_read("fileZaCrtanjeHrv/zupanije.shp")
 
 ui <- fluidPage(
   setBackgroundColor(
