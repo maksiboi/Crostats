@@ -13,8 +13,15 @@ library(shinyWidgets)
 tmap_mode("view")
 options(scipen=999)
 hr <- st_read("fileZaCrtanje2/zupanije.shp")
+
 zupanije <- c("Grad Zagreb","Medimurska","Krapinsko-zagorska","Varazdinska","Viroviticko-podravska","Pozesko-slavonska","Koprivnicko-krizevacka","Bjelovarsko-bilogorska","Vukovarsko-srijemska","Brodsko-posavska","Karlovacka","Osjecko-baranjska","Sisacko-moslavacka","Licko-senjska","Istarska","Zagrebacka","Sibensko-kninska","Dubrovacko-neretvanska","Splitsko-dalmatinska","Primorsko-goranska","Zadarska")
 hr$Zupanija <- zupanije
+
+sjediste <- c("Zagreb","Cakovec","Krapina","Varazdin","Virovitica","Pozega","Koprivnica","Bjelovar","Vukovar","Slavonski Brod","Karlovac","Osijek","Sisak","Gospic","Pazin","Zagreb","Sibenik","Dubrovnik","Split","Rijeka","Zadar")
+hr$SjedisteZupanije <- sjediste
+
+brojstanovnika <- c(777183,107615,121934,161820,71432,65158,102564,103448,147022,134283,114254,262852,142613,43439,198155,304348,98460,117242,431213,269508,162481)
+hr$brojStanovnika <- brojstanovnika
 
 ui <- fluidPage(
   setBackgroundColor(
@@ -45,7 +52,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   output$map <- renderTmap({
-    tm_shape(hr) + tm_fill("Zupanija") + tm_borders() +tm_layout(title="Republika Hrvatska")
+    tm_shape(hr) + tm_fill("Zupanija",popup.vars=c("Sjediste"="SjedisteZupanije","Broj stanovnika"="brojStanovnika")) + tm_borders() +tm_layout(title="Republika Hrvatska")
   })
   
   observeEvent(input$map_shape_click, {
