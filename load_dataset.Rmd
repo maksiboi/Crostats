@@ -1,0 +1,32 @@
+---
+title: "Ucitavanje podataka"
+author: "Karlo Boroš"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Ucitavanje podataka iz excel tablice sa svim potrebnim za analizu i prikaz sto se samog dataseta tice
+
+
+```{r}
+library(readxl)
+stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
+narodnost <- read_excel("dataset.xlsx", sheet = "Narodnost")
+spol <- read_excel("dataset.xlsx", sheet = "Spol")
+starost <- read_excel("dataset.xlsx", sheet = "Starost")
+rodeni <- read_excel("dataset.xlsx", sheet = "Živorođeni")
+umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
+brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
+razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
+stanovnistvo
+narodnost
+spol
+rodeni
+umrli
+brakovi
+razvodi
+```
