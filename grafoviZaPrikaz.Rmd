@@ -1,0 +1,132 @@
+---
+title: "Grafovi"
+author: "Maksim Kos"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tmap)
+library(sf)
+library(plotly)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(hrbrthemes)
+library(shinyWidgets)
+library(readxl)
+library(tidyr)
+library(gridExtra)
+```
+
+
+Učitavanje podataka
+```{r}
+stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
+narodnost <- read_excel("dataset.xlsx", sheet = "Narodnost")
+spol <- read_excel("dataset.xlsx", sheet = "Spol")
+starost <- read_excel("dataset.xlsx", sheet = "Starost")
+rodeni <- read_excel("dataset.xlsx", sheet = "Zivorodeni")
+umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
+brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
+razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
+e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani") 
+```
+
+
+```{r}
+e_gradani<- e_gradani[-1,]
+#tu opet može ići filter za odabrati koje županije...
+#ako je do pet županija nema smisla koristiti + cord_flip()
+
+e_gradani_plot <- ggplot(e_gradani,aes(x=Zupanija,y=`Broj jedinstvenih korisnika`,fill=Zupanija)) + geom_bar(stat="identity",color="black") + coord_flip() + ggtitle("Broj jedinstvenih korisnika sustava e-građanin") + theme_classic()
+
+ggplotly(e_gradani_plot)
+
+```
+
+
+Mozemo za pocetak prikazait cijelokupno stanovnistvo hrvatske kako se mijenjalo kroz godine
+
+```{r}
+stanovnistvo_RH <- stanovnistvo[1,]
+stanovnistvo_RH <-  pivot_longer(stanovnistvo_RH, "2001":"2021" ,names_to="Godine",values_to = "brojStanovnika")
+
+stanovnistvo_RH_plot <- ggplot(stanovnistvo_RH,aes(x=Godine,y=brojStanovnika)) + geom_line(size=1,aes(group=1),color="red") + theme(axis.text.x = element_text(angle=45)) + ggtitle("Broj stanovnika RH kroz godine") + ylab("Broj stanovnika ") 
+
+ggplotly(stanovnistvo_RH_plot)
+```
+
+
+
+Onda za svaku zupaniju zasebno
+
+
+```{r}
+#micem prvi redak vezan za cijelokpnu Hrvatsku
+stanovnistvo_1 <- stanovnistvo[-1,]
+
+names(stanovnistvo_1)
+
+stanovnistvo_1 <- pivot_longer(stanovnistvo_1, "2001":"2021" ,names_to="Godine",values_to = "brojStanovnika")
+View(stanovnistvo_1)
+
+Zupanija <- stanovnistvo_1 %>% filter( Zupanija %in% c("Brodsko-posavska","Vukovarsko-srijemska","Istarska","Zadarska") )
+
+br_stan_graf <- ggplot(Zupanija,aes(x=Godine,y=brojStanovnika,color=Zupanija)) +  
+                geom_line(aes(group=1)) + 
+                theme(axis.text.x = element_text(angle=45)) + 
+                ggtitle("Broj stanovnika kroz godine") + ylab("Broj stanovnika") 
+
+ggplotly(br_stan_graf)
+
+```
+
+
+Idemo skombat da spojimo tablice zivorodeni i umrli te gledamo trend pojedine zupanije ovisno jesu li umrli ili se rodili
+```{r}
+
+rodeni1 <- rodeni[-1,]
+rodeni1 <- pivot_longer(rodeni1, "1998":"2021" ,names_to="Godine",values_to = "rodeni")
+
+umrli1 <- umrli[-1,]
+umrli1 <- pivot_longer(umrli1, "1998":"2021" ,names_to="Godine",values_to = "umrli")
+
+
+umrli_rodeni <- cbind(rodeni1,"umrli"=umrli1$umrli)
+
+
+#ti u filter funkciju mozes filtrirati koje cemo godine prikazati i koju cemo zupaniju prikazati
+#filtriranaZupanija <-umrli_rodeni %>% filter(Zupanija %in% c("Grad Zagreb"),Godine > 2010)
+
+filtriranaZupanija <-umrli_rodeni %>% filter(Zupanija %in% c("Grad Zagreb","Vukovarsko-srijemska"))
+
+umrli_barplot <- ggplot(filtriranaZupanija,aes(x=Godine,y=umrli,color=Zupanija)) +
+                        geom_point() +
+                        geom_line(aes(group=1))  +
+                        theme(axis.text.x = element_text(angle=45))
+
+
+rodeni_barplot <- ggplot(filtriranaZupanija,aes(x=Godine,y=rodeni,color=Zupanija)) +
+                        geom_point() +
+                        geom_line(aes(group=1))  +
+                        theme(axis.text.x = element_text(angle=45)) 
+
+#ova dva grafa kada ekipa izfiltrira prikazati jedan pored drugoga,grid.arrange() ne funkcionira jer ne prima ggplotly kao ulazni parametar
+#zato koristim subplot funkciju... koja podrzava ggplotly
+p1 <- ggplotly(umrli_barplot)
+p2 <- ggplotly(rodeni_barplot) 
+
+p1
+p2
+
+#ovo sam skombaj nekak u frontend-u
+subplot(p1, p2,nrows=2,shareX = T)
+
+
+```
+
+
+
+
