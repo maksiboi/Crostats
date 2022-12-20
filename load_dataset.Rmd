@@ -18,10 +18,11 @@ stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
 narodnost <- read_excel("dataset.xlsx", sheet = "Narodnost")
 spol <- read_excel("dataset.xlsx", sheet = "Spol")
 starost <- read_excel("dataset.xlsx", sheet = "Starost")
-rodeni <- read_excel("dataset.xlsx", sheet = "Živorođeni")
+rodeni <- read_excel("dataset.xlsx", sheet = "Zivorodeni")
 umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
 brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
 razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
+egradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
 stanovnistvo
 narodnost
 spol
@@ -29,4 +30,5 @@ rodeni
 umrli
 brakovi
 razvodi
+egradani
 ```
