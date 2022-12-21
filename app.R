@@ -11,6 +11,7 @@ library(readxl)
 library(tidyr)
 library(gridExtra)
 
+#setwd("/home/vlado/crostats/")
 stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
 narodnost <- read_excel("dataset.xlsx", sheet = "Narodnost")
 spol <- read_excel("dataset.xlsx", sheet = "Spol")
@@ -19,14 +20,26 @@ rodeni <- read_excel("dataset.xlsx", sheet = "Zivorodeni")
 umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
 brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
 razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
-e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani") 
+e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
+zupanije_id <- c("Grad.Zagreb","Medimurska","Krapinsko.zagorska","Varazdinska","Viroviticko.podravska","Pozesko.slavonska","Koprivnicko.krizevacka","Bjelovarsko.bilogorska","Vukovarsko.srijemska","Brodsko.posavska","Karlovacka","Osjecko.baranjska","Sisacko.moslavacka","Licko.senjska","Istarska","Zagrebacka","Sibensko.kninska","Dubrovacko.neretvanska","Splitsko.dalmatinska","Primorsko.goranska","Zadarska")
+stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1,])
 
+#narodnost <- cbind(zupanije_id, narodnost[-1,])
+#spol <- cbind(zupanije_id, spol[-1,])
+#starost <- cbind(zupanije_id, starost[-1,])
+rodeni <- cbind(zupanije_id, rodeni[-1,])
 
-rodeni1 <- rodeni[-1,]
-rodeni1 <- pivot_longer(rodeni1, "1998":"2021" ,names_to="Godine",values_to = "rodeni")
+umrli <- cbind(zupanije_id, umrli[-1,])
 
-umrli1 <- umrli[-1,]
-umrli1 <- pivot_longer(umrli1, "1998":"2021" ,names_to="Godine",values_to = "umrli")
+brakovi <- cbind(zupanije_id, brakovi[-1,])
+
+razvodi <- cbind(zupanije_id, razvodi[-1,])
+
+#rodeni1 <- rodeni[-1,]
+rodeni1 <- pivot_longer(rodeni, "1998":"2021" ,names_to="Godine",values_to = "rodeni")
+
+#umrli1 <- umrli[-1,]
+umrli1 <- pivot_longer(umrli, "1998":"2021" ,names_to="Godine",values_to = "umrli")
 
 
 umrli_rodeni <- cbind(rodeni1,"umrli"=umrli1$umrli)
@@ -94,7 +107,7 @@ server <- function(input, output, session) {
     
     print(click)
     
-    filtriranaZupanija <-umrli_rodeni %>% filter(Zupanija %in% c("Grad Zagreb",novi_id))
+    filtriranaZupanija <-umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb",novi_id))
     
     rodeni_barplot <- ggplot(filtriranaZupanija,aes(x=Godine,y=rodeni,color=Zupanija)) +
       geom_point() +
