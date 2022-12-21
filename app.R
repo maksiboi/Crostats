@@ -39,10 +39,6 @@ rodeni_barplot <- ggplot(filtriranaZupanija,aes(x=Godine,y=rodeni,color=Zupanija
   theme(axis.text.x = element_text(angle=45)) 
 
 p2 <- ggplotly(rodeni_barplot) 
-print(umrli_rodeni)
-zupanija_id <- c("Grad.Zagreb","Medimurska","Krapinsko.zagorska","Varazdinska","Viroviticko.podravska","Pozesko.slavonska","Koprivnicko.krizevacka","Bjelovarsko.bilogorska","Vukovarsko.srijemska","Brodsko.posavska","Karlovacka","Osjecko.baranjska","Sisacko.moslavacka","Licko.senjska","Istarska","Zagrebacka","Sibensko.kninska","Dubrovacko.neretvanska","Splitsko.dalmatinska","Primorsko.goranska","Zadarska")
-umrli_rodeni$zupanija_id <- zupanija_id
-print(umrli_rodeni)
 
 tmap_mode("view")
 options(scipen=999)
@@ -94,21 +90,19 @@ server <- function(input, output, session) {
   observeEvent(input$map_shape_click, {
     
     click <- input$map_shape_click
-    
     novi_id <- click$id
-    print(umrli_rodeni)
-    filtriranaZupanija <-umrli_rodeni %>% filter(zupanija_id %in% c("Grad.Zagreb","Varazdinska"))
-    print(filtriranaZupanija)
-    umrli_barplot <- ggplot(filtriranaZupanija,aes(x=Godine,y=umrli,color=Zupanija)) +
-      geom_point() +
-      geom_line(aes(group=1))  +
-      theme(axis.text.x = element_text(angle=45))
+    
+    print(click)
+    
+    filtriranaZupanija <-umrli_rodeni %>% filter(Zupanija %in% c("Grad Zagreb",novi_id))
     
     rodeni_barplot <- ggplot(filtriranaZupanija,aes(x=Godine,y=rodeni,color=Zupanija)) +
       geom_point() +
       geom_line(aes(group=1))  +
       theme(axis.text.x = element_text(angle=45)) 
     
+    p2 <- ggplotly(rodeni_barplot) 
+
     output$plot <- renderPlotly(p2)
   })
   
