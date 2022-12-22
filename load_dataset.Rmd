@@ -31,4 +31,16 @@ umrli
 brakovi
 razvodi
 egradani
+
+rodeniNa1000 <- rodeni[-1:-4]/stanovnistvo[-1]*1000
+rodeniNa1000 <- cbind(stanovnistvo[1],rodeniNa1000)
+
+umrliNa1000 <- umrli[-1:-4]/stanovnistvo[-1]*1000
+umrliNa1000 <- cbind(stanovnistvo[1], umrliNa1000)
+
+brakoviNa1000 <- brakovi[-1:-4]/stanovnistvo[-1]*1000
+brakoviNa1000 <- cbind(stanovnistvo[1],brakoviNa1000)
+
+razvodiNa1000 <- razvodi[-1:-4]/stanovnistvo[-1]*1000
+razvodiNa1000 <- cbind(stanovnistvo[1],razvodiNa1000)
 ```
