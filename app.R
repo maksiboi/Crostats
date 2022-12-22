@@ -11,7 +11,6 @@ library(readxl)
 library(tidyr)
 library(gridExtra)
 
-#setwd("/home/vlado/crostats/")
 stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
 narodnost <- read_excel("dataset.xlsx", sheet = "Narodnost")
 spol <- read_excel("dataset.xlsx", sheet = "Spol")
@@ -66,6 +65,8 @@ hr$SjedisteZupanije <- sjediste
 brojstanovnika <- c(777183,107615,121934,161820,71432,65158,102564,103448,147022,134283,114254,262852,142613,43439,198155,304348,98460,117242,431213,269508,162481)
 hr$brojStanovnika <- brojstanovnika
 
+hr$zupanije_id <- zupanije_id
+
 ui <- fluidPage(
   setBackgroundColor(
     color = c("#2171B5","#F7FBFF","#FF0000"),
@@ -96,9 +97,21 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+  #tu treba ici logika ista logika da se na ODABRANI STUPAC oznaci, a ostali postave NA 
+  #ne znam kak izbaratati da se obojaju dvije zupanije osim ovog nacina
+  hr <- hr %>% mutate(bojaj=ifelse(zupanije_id %in% c("Grad.Zagreb"),"Grad.Zagreb",ifelse(zupanije_id %in% c("Medimurska"),"Medimurska",NA)))
+
+  #Paleta za kartu
+  Mypal <- c('#313695','#fee090','#d73027','#72001a')
+  
+  #col = stupac u hr-u koji boja zupanije
+  #pallete = paleta boja... to cemo lako stilki namjestiti
+  #showNA = F znaci da se u legendi prikazuju samo odabrane zupanije
+  
   output$map <- renderTmap({
-    tm_shape(hr) + tm_fill("Zupanija",popup.vars=c("Sjediste"="SjedisteZupanije","Broj stanovnika"="brojStanovnika")) + tm_borders() +tm_layout(title="Republika Hrvatska")
+    tm_shape(hr) + tm_fill(col="bojaj",popup.vars=c("Sjediste"="SjedisteZupanije","Broj stanovnika"="brojStanovnika"), palette = Mypal, title="Zupanija",showNA = F) + tm_borders() +tm_layout(title="Republika Hrvatska")
   })
+  
   
   observeEvent(input$map_shape_click, {
     
@@ -107,7 +120,7 @@ server <- function(input, output, session) {
     
     print(click)
     
-    filtriranaZupanija <-umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb",novi_id))
+    filtriranaZupanija <-umrli_rodeni %>% filter(zupanije_id %in% c(novi_id))
     
     rodeni_barplot <- ggplot(filtriranaZupanija,aes(x=Godine,y=rodeni,color=Zupanija)) +
       geom_point() +
