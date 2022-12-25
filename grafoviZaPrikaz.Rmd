@@ -128,5 +128,52 @@ subplot(p1, p2,nrows=2,shareX = T)
 ```
 
 
+Brakovi - razvodi 
 
+```{r}
+
+brakovi1 <- brakovi[-1,]
+brakovi1 <-
+  pivot_longer(brakovi1,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "brakovi")
+
+razvodi1 <- razvodi[-1,]
+razvodi1 <-
+  pivot_longer(razvodi1,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "razvodi")
+
+brakovi_razvodi <- cbind(brakovi1, "razvodi" = razvodi1$razvodi)
+
+```
+
+
+```{r}
+
+filtriranaZupanija <- brakovi_razvodi %>% filter(Zupanija %in% c("Grad Zagreb","Karlovacka") )
+
+brakovi_barplot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = brakovi, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj sklopljenih brakova")+
+      theme(axis.text.x = element_text(angle = 45))
+
+razvodi_barplot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = razvodi, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj razvedenih brakova")+
+      theme(axis.text.x = element_text(angle = 45))
+
+ggplotly(brakovi_barplot)
+ggplotly(razvodi_barplot)
+
+
+```
 
