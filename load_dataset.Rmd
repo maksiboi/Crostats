@@ -23,6 +23,7 @@ umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
 brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
 razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
 egradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
+migracije <- read_excel("dataset.xlsx", sheet = "Migracije")
 stanovnistvo
 narodnost
 spol
@@ -31,6 +32,7 @@ umrli
 brakovi
 razvodi
 egradani
+migracije
 
 rodeniNa1000 <- rodeni[-1:-4]/stanovnistvo[-1]*1000
 rodeniNa1000 <- cbind(stanovnistvo[1],rodeniNa1000)
