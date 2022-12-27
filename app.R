@@ -272,14 +272,11 @@ server <- function(input, output, session) {
   
   output$plot <- renderPlotly(initial_plot)
   
-  #tu treba ici logika ista logika da se na ODABRANI STUPAC oznaci, a ostali postave NA
-  #ne znam kak izbaratati da se obojaju dvije zupanije osim ovog nacina
   hr <-
     hr %>% mutate(bojaj = ifelse(zupanije_id %in% c("Grad.Zagreb"),
                                  Zupanija,
                                  NA))
   
-  #Paleta za kartu
   Mypal <- c('#313695', '#fee090', '#d73027', '#72001a')
   
   #col = stupac u hr-u koji boja zupanije
@@ -313,7 +310,7 @@ server <- function(input, output, session) {
                                    Zupanija,
                                    NA))
     
-    output$map <- renderTmap({
+    tmapProxy("map",session, {
       tm_shape(hr) + tm_fill(
         col = "bojaj",
         popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
