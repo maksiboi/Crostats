@@ -47,7 +47,7 @@ zupanije_id <-
     "Primorsko.goranska",
     "Zadarska"
   )
-stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1, ])
+stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1,])
 
 doseljeni <- cbind(zupanije_id, doseljeni)
 
@@ -56,13 +56,13 @@ odseljeni <- cbind(zupanije_id, odseljeni)
 #narodnost <- cbind(zupanije_id, narodnost[-1,])
 #spol <- cbind(zupanije_id, spol[-1,])
 #starost <- cbind(zupanije_id, starost[-1,])
-rodeni <- cbind(zupanije_id, rodeni[-1, ])
+rodeni <- cbind(zupanije_id, rodeni[-1,])
 
-umrli <- cbind(zupanije_id, umrli[-1, ])
+umrli <- cbind(zupanije_id, umrli[-1,])
 
-brakovi <- cbind(zupanije_id, brakovi[-1, ])
+brakovi <- cbind(zupanije_id, brakovi[-1,])
 
-razvodi <- cbind(zupanije_id, razvodi[-1, ])
+razvodi <- cbind(zupanije_id, razvodi[-1,])
 
 #rodeni1 <- rodeni[-1,]
 rodeni1 <-
@@ -258,7 +258,6 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  
   globalPlotType <- 1
   
   globalOdabraneZupanije <- c("Grad.Zagreb")
@@ -276,11 +275,9 @@ server <- function(input, output, session) {
   #tu treba ici logika ista logika da se na ODABRANI STUPAC oznaci, a ostali postave NA
   #ne znam kak izbaratati da se obojaju dvije zupanije osim ovog nacina
   hr <-
-    hr %>% mutate(bojaj = ifelse(
-      zupanije_id %in% c("Grad.Zagreb"),
-      "Grad.Zagreb",
-      ifelse(zupanije_id %in% c("Medimurska"), "Medimurska", NA)
-    ))
+    hr %>% mutate(bojaj = ifelse(zupanije_id %in% c("Grad.Zagreb"),
+                                 Zupanija,
+                                 NA))
   
   #Paleta za kartu
   Mypal <- c('#313695', '#fee090', '#d73027', '#72001a')
@@ -310,6 +307,21 @@ server <- function(input, output, session) {
     }
     
     globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
+    
+    hr <-
+      hr %>% mutate(bojaj = ifelse(zupanije_id %in% globalOdabraneZupanije,
+                                   Zupanija,
+                                   NA))
+    
+    output$map <- renderTmap({
+      tm_shape(hr) + tm_fill(
+        col = "bojaj",
+        popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
+        palette = Mypal,
+        title = "Zupanija",
+        showNA = F
+      ) + tm_borders() + tm_layout(title = "Republika Hrvatska")
+    })
     
     if (globalPlotType > 2) {
       filtriranaZupanija <<-
