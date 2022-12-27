@@ -20,6 +20,9 @@ umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
 brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
 razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
 e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
+doseljeni <- read_excel("dataset.xlsx", sheet = "Doseljeni")
+odseljeni <- read_excel("dataset.xlsx", sheet = "Odseljeni")
+
 zupanije_id <-
   c(
     "Grad.Zagreb",
@@ -45,6 +48,10 @@ zupanije_id <-
     "Zadarska"
   )
 stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1, ])
+
+doseljeni <- cbind(zupanije_id, doseljeni)
+
+odseljeni <- cbind(zupanije_id, odseljeni)
 
 #narodnost <- cbind(zupanije_id, narodnost[-1,])
 #spol <- cbind(zupanije_id, spol[-1,])
@@ -74,6 +81,21 @@ umrli1 <-
 
 umrli_rodeni <- cbind(rodeni1, "umrli" = umrli1$umrli)
 
+doseljeni1 <-
+  pivot_longer(doseljeni,
+               "2011":"2021" ,
+               names_to = "Godine",
+               values_to = "doseljeni")
+
+odseljeni1 <-
+  pivot_longer(odseljeni,
+               "2011":"2021" ,
+               names_to = "Godine",
+               values_to = "odseljeni")
+
+odseljeni_doseljeni <-
+  cbind(odseljeni1, "doseljeni" = doseljeni1$doseljeni)
+
 changePlotType <- function(plotType, filtriranaZupanija) {
   if (plotType == 1) {
     rodeni_barplot <-
@@ -94,13 +116,24 @@ changePlotType <- function(plotType, filtriranaZupanija) {
       theme(axis.text.x = element_text(angle = 45))
     
     umrli_barplot %>% ggplotly
+  } else if (plotType == 3) {
+    odseljeni_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = odseljeni, color = Zupanije)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj odseljenog stanovništva") +
+      theme(axis.text.x = element_text(angle = 45))
+  } else if (plotType == 4) {
+    doseljeni_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = doseljeni, color = Zupanije)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj doseljenog stanovnistva") +
+      theme(axis.text.x = element_text(angle = 45))
   }
 }
-
-prvaFiltriranaZupanija <-
-  umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb"))
-
-initial_plot <- changePlotType(1, prvaFiltriranaZupanija)
 
 tmap_mode("view")
 options(scipen = 999)
@@ -203,8 +236,12 @@ ui <- fluidPage(
       selectInput(
         "selectPrikaz",
         label = h3("Prikaz podataka"),
-        choices = list("Rodeni" = 1,
-                       "Umrli" = 2)
+        choices = list(
+          "Rodeni" = 1,
+          "Umrli" = 2,
+          "Odseljeni" = 3,
+          "Doseljeni" = 4
+        )
       ),
       
       plotlyOutput("plot"),
@@ -228,6 +265,11 @@ server <- function(input, output, session) {
   
   filtriranaZupanija <-
     umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb"))
+  
+  prvaFiltriranaZupanija <-
+    umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb"))
+  
+  initial_plot <- changePlotType(1, prvaFiltriranaZupanija)
   
   output$plot <- renderPlotly(initial_plot)
   
@@ -260,24 +302,42 @@ server <- function(input, output, session) {
   observeEvent(input$map_shape_click, {
     click <- input$map_shape_click
     novi_id <- click$id
-    if (novi_id %in% globalOdabraneZupanije) return()
+    if (novi_id %in% globalOdabraneZupanije)
+      return()
+    
     if (length(globalOdabraneZupanije) >= 4) {
       globalOdabraneZupanije <<- c(globalOdabraneZupanije[4])
     }
-    globalOdabraneZupanije <<- c(globalOdabraneZupanije,novi_id)
-    print(globalOdabraneZupanije)
-    filtriranaZupanija <<-
-      umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
     
-    p2 <- changePlotType(globalPlotType,filtriranaZupanija)
+    globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
     
-    output$plot <- renderPlotly(p2)
+    if (globalPlotType > 2) {
+      filtriranaZupanija <<-
+        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+    } else {
+      filtriranaZupanija <<-
+        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+    }
+    
+    newPlot <- changePlotType(globalPlotType, filtriranaZupanija)
+    
+    output$plot <- renderPlotly(newPlot)
   })
   
   observeEvent(input$selectPrikaz, {
     globalPlotType <<- as.numeric(input$selectPrikaz)
-    changePlotType(globalPlotType, filtriranaZupanija) %>% ggplotly -> new_plot
-    output$plot <- renderPlotly(new_plot)
+    
+    if (globalPlotType > 2) {
+      filtriranaZupanija <<-
+        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+    } else {
+      filtriranaZupanija <<-
+        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+    }
+    
+    changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
+    
+    output$plot <- renderPlotly(newPlot)
   })
   
 }
