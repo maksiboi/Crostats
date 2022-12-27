@@ -23,7 +23,8 @@ umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
 brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
 razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
 egradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
-migracije <- read_excel("dataset.xlsx", sheet = "Migracije")
+doseljeni <- read_excel("dataset.xlsx", sheet = "Doseljeni")
+odseljeni <- read_excel("dataset.xlsx", sheet = "Odseljeni")
 stanovnistvo
 narodnost
 spol
@@ -32,7 +33,8 @@ umrli
 brakovi
 razvodi
 egradani
-migracije
+doseljeni
+odseljeni
 
 rodeniNa1000 <- rodeni[-1:-4]/stanovnistvo[-1]*1000
 rodeniNa1000 <- cbind(stanovnistvo[1],rodeniNa1000)
@@ -45,4 +47,10 @@ brakoviNa1000 <- cbind(stanovnistvo[1],brakoviNa1000)
 
 razvodiNa1000 <- razvodi[-1:-4]/stanovnistvo[-1]*1000
 razvodiNa1000 <- cbind(stanovnistvo[1],razvodiNa1000)
+
+odseljeniNa1000 <- odseljeni[-1:-3]/stanovnistvo[-1,-1:-11]*1000
+odseljeniNa1000 <- cbind(stanovnistvo[-1,1],odseljeniNa1000)
+
+doseljeniNa1000 <- doseljeni[-1:-3]/stanovnistvo[-1,-1:-11]*1000
+doseljeniNa1000 <- cbind(stanovnistvo[-1,1],doseljeniNa1000)
 ```
