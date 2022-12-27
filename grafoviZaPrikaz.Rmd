@@ -31,7 +31,14 @@ rodeni <- read_excel("dataset.xlsx", sheet = "Zivorodeni")
 umrli <- read_excel("dataset.xlsx", sheet = "Umrli")
 brakovi <- read_excel("dataset.xlsx", sheet = "Brakovi")
 razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
-e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani") 
+e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
+
+doseljeni <- read_excel("dataset.xlsx", sheet = "Doseljeni")
+odseljeni <- read_excel("dataset.xlsx", sheet = "Odseljeni")
+```
+
+
+```{r}
 ```
 
 
@@ -174,6 +181,83 @@ razvodi_barplot <-
 ggplotly(brakovi_barplot)
 ggplotly(razvodi_barplot)
 
+
+```
+
+
+
+
+TU ti krecu doseljeni-odseljeni
+```{r}
+zupanije_id <-
+  c(
+    "Grad.Zagreb",
+    "Medimurska",
+    "Krapinsko.zagorska",
+    "Varazdinska",
+    "Viroviticko.podravska",
+    "Pozesko.slavonska",
+    "Koprivnicko.krizevacka",
+    "Bjelovarsko.bilogorska",
+    "Vukovarsko.srijemska",
+    "Brodsko.posavska",
+    "Karlovacka",
+    "Osjecko.baranjska",
+    "Sisacko.moslavacka",
+    "Licko.senjska",
+    "Istarska",
+    "Zagrebacka",
+    "Sibensko.kninska",
+    "Dubrovacko.neretvanska",
+    "Splitsko.dalmatinska",
+    "Primorsko.goranska",
+    "Zadarska"
+  )
+
+
+doseljeni <- cbind(zupanije_id, doseljeni)
+
+odseljeni <- cbind(zupanije_id, odseljeni)
+```
+
+```{r}
+doseljeni1 <-
+  pivot_longer(doseljeni,
+               "2011":"2021" ,
+               names_to = "Godine",
+               values_to = "doseljeni")
+
+odseljeni1 <-
+  pivot_longer(odseljeni,
+               "2011":"2021" ,
+               names_to = "Godine",
+               values_to = "odseljeni")
+
+odseljeni_doseljeni <- cbind(odseljeni1, "doseljeni" = doseljeni1$doseljeni)
+
+```
+
+```{r}
+filtriranaZupanija <- odseljeni_doseljeni %>% filter(Zupanije %in% c("Grad Zagreb","Karlovacka") )
+
+odseljeni_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = odseljeni, color = Zupanije)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj odseljenog stanovništva")+
+      theme(axis.text.x = element_text(angle = 45))
+
+doseljeni_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = doseljeni, color = Zupanije)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj doseljenog stanovnistva")+
+      theme(axis.text.x = element_text(angle = 45))
+
+ggplotly(odseljeni_plot)
+ggplotly(doseljeni_plot)
 
 ```
 
