@@ -219,6 +219,8 @@ hr$brojStanovnika <- brojstanovnika
 
 hr$zupanije_id <- zupanije_id
 
+
+
 ui <- fluidPage(
   setBackgroundColor(
     color = c("#2171B5", "#F7FBFF", "#FF0000"),
@@ -257,7 +259,7 @@ ui <- fluidPage(
       column(
         8,
         numericRangeInput(
-          "proba",
+          "razdoblje",
           label = h3("Razdoblje:"),
           value = c(1998, 2021),
           separator = "-"
@@ -299,13 +301,15 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   globalPlotType <- 1
   
+  razdoblje <- c(1998,2021)
+  
   globalOdabraneZupanije <- c("Grad.Zagreb")
   
   filtriranaZupanija <-
-    umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb"))
+    umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
   
   prvaFiltriranaZupanija <-
-    umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb"))
+    umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
   
   initial_plot <- changePlotType(1, prvaFiltriranaZupanija)
   
@@ -330,6 +334,8 @@ server <- function(input, output, session) {
       breaks = c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000,400000,450000,800000)
     )
   })
+  
+ 
   
   observeEvent(input$map_shape_click, {
     click <- input$map_shape_click
@@ -357,10 +363,10 @@ server <- function(input, output, session) {
     
     if (globalPlotType > 2) {
       filtriranaZupanija <<-
-        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     } else {
       filtriranaZupanija <<-
-        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     }
     
     newPlot <- changePlotType(globalPlotType, filtriranaZupanija)
@@ -373,10 +379,10 @@ server <- function(input, output, session) {
     
     if (globalPlotType > 2) {
       filtriranaZupanija <<-
-        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     } else {
       filtriranaZupanija <<-
-        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
+        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     }
     
     # KAD SE UPDATEA HR ONDA CE SE MIJENJATI MAPA
@@ -390,6 +396,18 @@ server <- function(input, output, session) {
     
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     
+    output$plot <- renderPlotly(newPlot)
+  })
+  
+  ### RAZDOBLJE
+  observeEvent(input$razdoblje, {
+    #print(razdoblje[1])
+    razdoblje[1] <<- ifelse(is.na(input$razdoblje[1]), 1998, input$razdoblje[1])
+    razdoblje[2] <<- ifelse(is.na(input$razdoblje[2]), 2021, input$razdoblje[2])
+    
+    filtriranaZupanija <<- filtriranaZupanija %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    
+    changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     output$plot <- renderPlotly(newPlot)
   })
   
