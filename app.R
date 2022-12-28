@@ -232,17 +232,56 @@ ui <- fluidPage(
     mainPanel(tmapOutput(outputId = "map", height = 900),
               width = 5),
     sidebarPanel(
-      h1("Zagrebacka zupanija"),
-      selectInput(
-        "selectPrikaz",
-        label = h3("Prikaz podataka"),
-        choices = list(
-          "Rodeni" = 1,
-          "Umrli" = 2,
-          "Odseljeni" = 3,
-          "Doseljeni" = 4
+      #h1("Prikaz podataka"),
+      fluidRow(
+        column(3,selectInput(
+          "selectPrikaz",
+          label = h3("Kategorija:"),
+          choices = list(
+            "Rodeni" = 1,
+            "Umrli" = 2,
+            "Odseljeni" = 3,
+            "Doseljeni" = 4
+            )
+          )
+        ),
+               
+        #column(8,sliderInput(
+        #       inputId = "range",
+        #       label = "",
+        #       min = 1998,
+        #       max = 2021,
+        #       value = c(2003, 2011)
+        #       ),
+        #)
+        column(8, numericRangeInput(
+          "proba",
+          label = h3("Razdoblje:"),
+          value = c(1998, 2021),
+          separator = "-"
+          
+          )
         )
+               
       ),
+      #selectInput(
+      #  "selectPrikaz",
+      #  label = h3("Prikaz podataka"),
+      #  choices = list(
+      #    "Rodeni" = 1,
+      #    "Umrli" = 2,
+      #    "Odseljeni" = 3,
+      #    "Doseljeni" = 4
+      #  )
+      #),
+      #sliderInput(
+        #inputId = "range",
+        #label = "GODINE",
+        #min = 1998,
+        #max = 2021,
+        #value = c(2003, 2011)
+      #),
+      
       
       plotlyOutput("plot"),
       
