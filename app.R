@@ -233,8 +233,8 @@ ui <- fluidPage(
               width = 5),
     sidebarPanel(
       #h1("Prikaz podataka"),
-      fluidRow(
-        column(3,selectInput(
+      fluidRow(column(
+        3, selectInput(
           "selectPrikaz",
           label = h3("Kategorija:"),
           choices = list(
@@ -242,28 +242,28 @@ ui <- fluidPage(
             "Umrli" = 2,
             "Odseljeni" = 3,
             "Doseljeni" = 4
-            )
           )
-        ),
-               
-        #column(8,sliderInput(
-        #       inputId = "range",
-        #       label = "",
-        #       min = 1998,
-        #       max = 2021,
-        #       value = c(2003, 2011)
-        #       ),
-        #)
-        column(8, numericRangeInput(
+        )
+      ),
+      
+      #column(8,sliderInput(
+      #       inputId = "range",
+      #       label = "",
+      #       min = 1998,
+      #       max = 2021,
+      #       value = c(2003, 2011)
+      #       ),
+      #)
+      column(
+        8,
+        numericRangeInput(
           "proba",
           label = h3("Razdoblje:"),
           value = c(1998, 2021),
           separator = "-"
           
-          )
         )
-               
-      ),
+      )),
       #selectInput(
       #  "selectPrikaz",
       #  label = h3("Prikaz podataka"),
@@ -275,11 +275,11 @@ ui <- fluidPage(
       #  )
       #),
       #sliderInput(
-        #inputId = "range",
-        #label = "GODINE",
-        #min = 1998,
-        #max = 2021,
-        #value = c(2003, 2011)
+      #inputId = "range",
+      #label = "GODINE",
+      #min = 1998,
+      #max = 2021,
+      #value = c(2003, 2011)
       #),
       
       
@@ -323,41 +323,37 @@ server <- function(input, output, session) {
   #showNA = F znaci da se u legendi prikazuju samo odabrane zupanije
   
   output$map <- renderTmap({
-    tm_shape(hr) + tm_fill(
-      col = "bojaj",
+    tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
+      col = "brojStanovnika",
       popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
-      palette = Mypal,
-      title = "Zupanija",
-      showNA = F
-    ) + tm_borders() + tm_layout(title = "Republika Hrvatska")
+      title = "Broj Stanovnika",
+      breaks = c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000,400000,450000,800000)
+    )
   })
   
   observeEvent(input$map_shape_click, {
     click <- input$map_shape_click
     novi_id <- click$id
-    if (novi_id %in% globalOdabraneZupanije)
-      return()
     
-    if (length(globalOdabraneZupanije) >= 4) {
-      globalOdabraneZupanije <<- c(globalOdabraneZupanije[4])
+    if (novi_id %in% globalOdabraneZupanije &
+        length(globalOdabraneZupanije) > 1) {
+      globalOdabraneZupanije <<-
+        globalOdabraneZupanije[!globalOdabraneZupanije == novi_id]
+    } else if (novi_id %in% globalOdabraneZupanije &
+               length(globalOdabraneZupanije) == 1) {
+    } else {
+      globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
     }
     
-    globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
+    if (length(globalOdabraneZupanije) >= 5) {
+      globalOdabraneZupanije <<- c(globalOdabraneZupanije[5])
+    }
+    
     
     hr <-
       hr %>% mutate(bojaj = ifelse(zupanije_id %in% globalOdabraneZupanije,
                                    Zupanija,
                                    NA))
-    
-    tmapProxy("map",session, {
-      tm_shape(hr) + tm_fill(
-        col = "bojaj",
-        popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
-        palette = Mypal,
-        title = "Zupanija",
-        showNA = F
-      ) + tm_borders() + tm_layout(title = "Republika Hrvatska")
-    })
     
     if (globalPlotType > 2) {
       filtriranaZupanija <<-
@@ -382,6 +378,15 @@ server <- function(input, output, session) {
       filtriranaZupanija <<-
         umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije)
     }
+    
+    # KAD SE UPDATEA HR ONDA CE SE MIJENJATI MAPA
+    # tmapProxy("map", session, {
+    #   tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
+    #     col = "brojStanovnika",
+    #     popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
+    #     title = "Zupanija",
+    #   )
+    # })
     
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     
