@@ -65,36 +65,56 @@ brakovi <- cbind(zupanije_id, brakovi[-1,])
 razvodi <- cbind(zupanije_id, razvodi[-1,])
 
 #rodeni1 <- rodeni[-1,]
-rodeni1 <-
+rodeni <-
   pivot_longer(rodeni,
                "1998":"2021" ,
                names_to = "Godine",
                values_to = "rodeni")
 
 #umrli1 <- umrli[-1,]
-umrli1 <-
+umrli <-
   pivot_longer(umrli,
                "1998":"2021" ,
                names_to = "Godine",
                values_to = "umrli")
+brakovi <-
+  pivot_longer(brakovi,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "brakovi")
 
+razvodi <-
+  pivot_longer(razvodi,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "razvodi")
 
-umrli_rodeni <- cbind(rodeni1, "umrli" = umrli1$umrli)
+### grupirano ovako zbog godina
+umrli_rodeni_brakovi_razvodi <- cbind(rodeni, "umrli" = umrli$umrli, "brakovi" = brakovi$brakovi, "razvodi" = razvodi$razvodi)
 
-doseljeni1 <-
+doseljeni <-
   pivot_longer(doseljeni,
                "2011":"2021" ,
                names_to = "Godine",
                values_to = "doseljeni")
 
-odseljeni1 <-
+odseljeni <-
   pivot_longer(odseljeni,
                "2011":"2021" ,
                names_to = "Godine",
                values_to = "odseljeni")
 
 odseljeni_doseljeni <-
-  cbind(odseljeni1, "doseljeni" = doseljeni1$doseljeni)
+  cbind(odseljeni, "doseljeni" = doseljeni$doseljeni)
+
+stanovnistvo <- 
+  pivot_longer(stanovnistvo,
+               "2001":"2021",
+               names_to = "Godine",
+               values_to = "stanovnistvo")
+
+
+
 
 changePlotType <- function(plotType, filtriranaZupanija) {
   if (plotType == 1) {
@@ -132,7 +152,32 @@ changePlotType <- function(plotType, filtriranaZupanija) {
       geom_line(aes(group = 1))  +
       ylab("Broj doseljenog stanovnistva") +
       theme(axis.text.x = element_text(angle = 45))
+  } else if (plotType == 5) {
+    stanovnistvo_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = stanovnistvo, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj stanovnistva") +
+      theme(axis.text.x = element_text(angle = 45))
+  } else if (plotType == 6) {
+    brakovi_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = brakovi, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj sklopljenih brakova") +
+      theme(axis.text.x = element_text(angle = 45))
+  } else if (plotType == 7) {
+    razvodi_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = razvodi, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj razvoda ") +
+      theme(axis.text.x = element_text(angle = 45))
   }
+  
 }
 
 tmap_mode("view")
@@ -235,54 +280,34 @@ ui <- fluidPage(
               width = 5),
     sidebarPanel(
       #h1("Prikaz podataka"),
-      fluidRow(column(
-        3, selectInput(
-          "selectPrikaz",
-          label = h3("Kategorija:"),
-          choices = list(
-            "Rodeni" = 1,
-            "Umrli" = 2,
-            "Odseljeni" = 3,
-            "Doseljeni" = 4
+      fluidRow(
+        column(
+          3, 
+          selectInput(
+            "selectPrikaz",
+            label = h3("Kategorija:"),
+            choices = list(
+              "Rodeni" = 1,
+              "Umrli" = 2,
+              "Odseljeni" = 3,
+              "Doseljeni" = 4,
+              "Broj stanovnika" = 5,
+              "Sklopljeni brakovi" = 6,
+              "Razvodi" = 7
+            )
+          )
+        ),
+      
+        column(
+          8,
+          numericRangeInput(
+            "razdoblje",
+            label = h3("Razdoblje:"),
+            value = c(1998, 2021),
+            separator = "-"
           )
         )
       ),
-      
-      #column(8,sliderInput(
-      #       inputId = "range",
-      #       label = "",
-      #       min = 1998,
-      #       max = 2021,
-      #       value = c(2003, 2011)
-      #       ),
-      #)
-      column(
-        8,
-        numericRangeInput(
-          "razdoblje",
-          label = h3("Razdoblje:"),
-          value = c(1998, 2021),
-          separator = "-"
-          
-        )
-      )),
-      #selectInput(
-      #  "selectPrikaz",
-      #  label = h3("Prikaz podataka"),
-      #  choices = list(
-      #    "Rodeni" = 1,
-      #    "Umrli" = 2,
-      #    "Odseljeni" = 3,
-      #    "Doseljeni" = 4
-      #  )
-      #),
-      #sliderInput(
-      #inputId = "range",
-      #label = "GODINE",
-      #min = 1998,
-      #max = 2021,
-      #value = c(2003, 2011)
-      #),
       
       
       plotlyOutput("plot"),
@@ -306,10 +331,10 @@ server <- function(input, output, session) {
   globalOdabraneZupanije <- c("Grad.Zagreb")
   
   filtriranaZupanija <-
-    umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    umrli_rodeni_brakovi_razvodi %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
   
   prvaFiltriranaZupanija <-
-    umrli_rodeni %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    umrli_rodeni_brakovi_razvodi %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
   
   initial_plot <- changePlotType(1, prvaFiltriranaZupanija)
   
@@ -361,29 +386,39 @@ server <- function(input, output, session) {
                                    Zupanija,
                                    NA))
     
-    if (globalPlotType > 2) {
-      filtriranaZupanija <<-
-        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
-    } else {
-      filtriranaZupanija <<-
-        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
-    }
+    
+    tmp <- NULL
+    if (globalPlotType %in% c(1,2,6,7)) {
+      tmp <- umrli_rodeni_brakovi_razvodi
+    } else if (globalPlotType %in% c(3,4)) {
+      tmp <- odseljeni_doseljeni
+    } else if (globalPlotType == 5) {
+      tmp <- stanovnistvo
+    } 
+    
+    filtriranaZupanija <<- 
+      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     
     newPlot <- changePlotType(globalPlotType, filtriranaZupanija)
     
     output$plot <- renderPlotly(newPlot)
   })
   
+  #### KATEGORIJE
   observeEvent(input$selectPrikaz, {
     globalPlotType <<- as.numeric(input$selectPrikaz)
     
-    if (globalPlotType > 2) {
-      filtriranaZupanija <<-
-        odseljeni_doseljeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
-    } else {
-      filtriranaZupanija <<-
-        umrli_rodeni %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
-    }
+    tmp <- NULL
+    if (globalPlotType %in% c(1,2,6,7)) {
+      tmp <- umrli_rodeni_brakovi_razvodi
+    } else if (globalPlotType %in% c(3,4)) {
+      tmp <- odseljeni_doseljeni
+    } else if (globalPlotType == 5) {
+      tmp <- stanovnistvo
+    } 
+    
+    filtriranaZupanija <<- 
+      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     
     # KAD SE UPDATEA HR ONDA CE SE MIJENJATI MAPA
     # tmapProxy("map", session, {
@@ -401,9 +436,9 @@ server <- function(input, output, session) {
   
   ### RAZDOBLJE
   observeEvent(input$razdoblje, {
-    #print(razdoblje[1])
-    razdoblje[1] <<- ifelse(is.na(input$razdoblje[1]), 1998, input$razdoblje[1])
-    razdoblje[2] <<- ifelse(is.na(input$razdoblje[2]), 2021, input$razdoblje[2])
+    ### treba ispravnu validaciju odradit
+    razdoblje[1] <<- ifelse(is.na(input$razdoblje[1]), 1998, ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1]))
+    razdoblje[2] <<- ifelse(is.na(input$razdoblje[2]), 2021, ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2]))
     
     filtriranaZupanija <<- filtriranaZupanija %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     
