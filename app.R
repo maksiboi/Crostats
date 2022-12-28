@@ -65,49 +65,49 @@ brakovi <- cbind(zupanije_id, brakovi[-1,])
 razvodi <- cbind(zupanije_id, razvodi[-1,])
 
 #rodeni1 <- rodeni[-1,]
-rodeni <-
+rodeni1 <-
   pivot_longer(rodeni,
                "1998":"2021" ,
                names_to = "Godine",
                values_to = "rodeni")
 
 #umrli1 <- umrli[-1,]
-umrli <-
+umrli1 <-
   pivot_longer(umrli,
                "1998":"2021" ,
                names_to = "Godine",
                values_to = "umrli")
-brakovi <-
+brakovi1 <-
   pivot_longer(brakovi,
                "1998":"2021" ,
                names_to = "Godine",
                values_to = "brakovi")
 
-razvodi <-
+razvodi1 <-
   pivot_longer(razvodi,
                "1998":"2021" ,
                names_to = "Godine",
                values_to = "razvodi")
 
 ### grupirano ovako zbog godina
-umrli_rodeni_brakovi_razvodi <- cbind(rodeni, "umrli" = umrli$umrli, "brakovi" = brakovi$brakovi, "razvodi" = razvodi$razvodi)
+umrli_rodeni_brakovi_razvodi <- cbind(rodeni1, "umrli" = umrli1$umrli, "brakovi" = brakovi1$brakovi, "razvodi" = razvodi1$razvodi)
 
-doseljeni <-
+doseljeni1 <-
   pivot_longer(doseljeni,
                "2011":"2021" ,
                names_to = "Godine",
                values_to = "doseljeni")
 
-odseljeni <-
+odseljeni1 <-
   pivot_longer(odseljeni,
                "2011":"2021" ,
                names_to = "Godine",
                values_to = "odseljeni")
 
 odseljeni_doseljeni <-
-  cbind(odseljeni, "doseljeni" = doseljeni$doseljeni)
+  cbind(odseljeni1, "doseljeni" = doseljeni1$doseljeni)
 
-stanovnistvo <- 
+stanovnistvo1 <- 
   pivot_longer(stanovnistvo,
                "2001":"2021",
                names_to = "Godine",
@@ -263,8 +263,14 @@ brojstanovnika <-
 hr$brojStanovnika <- brojstanovnika
 
 hr$zupanije_id <- zupanije_id
-
-
+##### data scientist kaze nema na cemu
+hr$rodeni_2021 <- rodeni %>% select("2021")
+hr$umrli_2021 <- umrli %>% select("2021")
+hr$odseljeni_2021 <- odseljeni %>% select("2021")
+hr$doseljeni_2021 <- doseljeni %>% select("2021")
+hr$stanovnistvo_2021 <- stanovnistvo %>% select("2021")
+hr$brakovi_2021 <- brakovi %>% select("2021")
+hr$razvodi_2021 <- razvodi %>% select("2021")
 
 ui <- fluidPage(
   setBackgroundColor(
@@ -393,7 +399,7 @@ server <- function(input, output, session) {
     } else if (globalPlotType %in% c(3,4)) {
       tmp <- odseljeni_doseljeni
     } else if (globalPlotType == 5) {
-      tmp <- stanovnistvo
+      tmp <- stanovnistvo1
     } 
     
     filtriranaZupanija <<- 
@@ -414,7 +420,7 @@ server <- function(input, output, session) {
     } else if (globalPlotType %in% c(3,4)) {
       tmp <- odseljeni_doseljeni
     } else if (globalPlotType == 5) {
-      tmp <- stanovnistvo
+      tmp <- stanovnistvo1
     } 
     
     filtriranaZupanija <<- 
