@@ -17,4 +17,4 @@ Za procjene stanovnistva:
 2. Osnova procjena broja stanovnika za razdoblje od 2011. do 2020. godine jesu popisni podaci prikupljeni Popisom stanovništva, kućanstava i stanova 2011.
 3. Osnova procjene broja stanovnika za 2021. godinu jesu popisni podaci prikupljeni Popisom stanovništva, kućanstava i stanova u Republici Hrvatskoj 2021. godine.
 
-Podaci koristeni za izradu aplikacije su preuzete od Drzavnog zavoda za statistiku blabla -> to moramo dodati negdje pa da ne zaboravimo
+Podaci koristeni za izradu aplikacije su preuzete od Drzavnog zavoda za statistiku

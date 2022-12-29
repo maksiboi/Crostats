@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Ucitavanje podataka iz excel tablice sa svim potrebnim za analizu i prikaz sto se samog dataseta tice
 
-
 ```{r}
 library(readxl)
 stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
