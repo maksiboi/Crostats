@@ -334,7 +334,7 @@ ui <- fluidPage(
       h2("Fun Fact 2", style = "font-size:30px"),
       helpText("Facts prvi Fun Fact 1", style = "font-size:20px"),
       h2("Fun Fact 3", style = "font-size:30px"),
-      helpText("Serman je jedina vredela od svih", style = "font-size:20px"),
+      helpText("https://youtu.be/SlWq9Nag5TQ", style = "font-size:20px"),
       width = 7
     )
   )
