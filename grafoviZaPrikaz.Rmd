@@ -56,7 +56,7 @@ dobno_spolna <- pivot_longer(dobno_spolna, "0 – 4":"95 - 100" ,names_to="Godin
 
 vektor_godina <- pull(dobno_spolna,Godine)
 vektor_godina <- unique(vektor_godina)
-vektor_godina
+
 
 dobno_spolna <- dobno_spolna %>%mutate(
                 brojStanovnika = ifelse(Sex=="M", brojStanovnika*(-1),

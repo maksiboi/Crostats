@@ -275,71 +275,15 @@ hr$brojStanovnika <- brojstanovnika
 
 hr$zupanije_id <- zupanije_id
 ##### data scientist kaze nema na cemu
-hr$rodeni_2021 <- rodeni %>% select("2021") %>% pull("2021")
-hr$umrli_2021 <- umrli %>% select("2021") %>% pull("2021")
-hr$odseljeni_2021 <- odseljeni %>% select("2021") %>% pull("2021")
-hr$doseljeni_2021 <- doseljeni %>% select("2021") %>% pull("2021")
-hr$stanovnistvo_2021 <- stanovnistvo %>% select("2021") %>% pull("2021")
-hr$brakovi_2021 <- brakovi %>% select("2021") %>% pull("2021")
-hr$razvodi_2021 <- razvodi %>% select("2021") %>% pull("2021")
-
-changeMapCategory <- function(plotType) {
-  if (plotType == 1) {
-    "rodeni_2021"
-  } else if (plotType ==2) {
-    "umrli_2021"
-  } else if (plotType == 3) {
-    "odseljeni_2021"
-  } else if (plotType == 4) {
-    "doseljeni_2021"
-  } else if (plotType == 5) {
-    "stanovnistvo_2021"
-  } else if (plotType == 6) {
-    "brakovi_2021"
-  } else if (plotType == 7) {
-    "razvodi_2021"
-  }
-}
-
-changeTitleName <- function(plotType) {
-  if (plotType == 1) {
-    "Broj rođenih"
-  } else if (plotType ==2) {
-    "Broj umrlih"
-  } else if (plotType == 3) {
-    "Broj odseljenih"
-  } else if (plotType == 4) {
-    "Broj doseljenih"
-  } else if (plotType == 5) {
-    "Stanovništvo"
-  } else if (plotType == 6) {
-    "Broj sklopljenih brakova"
-  } else if (plotType == 7) {
-    "Broj razvoda"
-  }
-}
-
-changeMapBreaks <- function(plotType) {
-  if (plotType == 1) {
-    c(0,1000,2000,3000,4000,5000,8500) # rodeni
-  } else if (plotType == 2) {
-    c(0,2000,4000,6000,8000,10000,15000) # umrli
-  } else if (plotType == 3) {
-    c(0,2500,4000,8000,12000,16000,20000) # odseljeni
-  } else if (plotType == 4) {
-    c(0,3000,6000,9000,12000,15000,20000) # doseljeni
-  } else if (plotType == 5) {
-    c(0,50000,100000,150000,250000,450000,800000) # stanovnistvo
-  } else if (plotType == 6) {
-    c(0,400,800,1200,1600,2000,4000) # brakovi
-  } else if (plotType == 7) {
-    c(0,100,200,300,400,500,1100) # razvodi
-  }
-}
+hr$rodeni_2021 <- rodeni %>% select("2021")
+hr$umrli_2021 <- umrli %>% select("2021")
+hr$odseljeni_2021 <- odseljeni %>% select("2021")
+hr$doseljeni_2021 <- doseljeni %>% select("2021")
+hr$stanovnistvo_2021 <- stanovnistvo %>% select("2021")
+hr$brakovi_2021 <- brakovi %>% select("2021")
+hr$razvodi_2021 <- razvodi %>% select("2021")
 
 ui <- fluidPage(
-  title = "CroStats",
-  tags$head(tags$link(rel="icon", href="favicon.ico")),
   setBackgroundColor(
     color = c("#2171B5", "#F7FBFF", "#FF0000"),
     gradient = "linear",
@@ -413,19 +357,25 @@ server <- function(input, output, session) {
   
   output$plot <- renderPlotly(initial_plot)
   
+  hr <-
+    hr %>% mutate(bojaj = ifelse(zupanije_id %in% c("Grad.Zagreb"),
+                                 Zupanija,
+                                 NA))
+  
+  Mypal <- c('#313695', '#fee090', '#d73027', '#72001a')
+  
   #col = stupac u hr-u koji boja zupanije
   #pallete = paleta boja... to cemo lako stilki namjestiti
   #showNA = F znaci da se u legendi prikazuju samo odabrane zupanije
   
   output$map <- renderTmap({
     tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
-      col = "rodeni_2021",
+      col = "brojStanovnika",
       popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
-      title = "Broj rođenih",
-      breaks = c(0,1000,2000,3000,4000,5000,8500)
+      title = "Broj Stanovnika",
+      breaks = c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000,400000,450000,800000)
     )
   })
-  freeToRender <- F
   
  
   
@@ -473,11 +423,6 @@ server <- function(input, output, session) {
   
   #### KATEGORIJE
   observeEvent(input$selectPrikaz, {
-    if (!freeToRender) {
-      freeToRender <<- T
-      return()
-    }
-    
     globalPlotType <<- as.numeric(input$selectPrikaz)
     
     tmp <- NULL
@@ -492,23 +437,20 @@ server <- function(input, output, session) {
     filtriranaZupanija <<- 
       tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     
+    # KAD SE UPDATEA HR ONDA CE SE MIJENJATI MAPA
+    # tmapProxy("map", session, {
+    #   tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
+    #     col = "brojStanovnika",
+    #     popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
+    #     title = "Zupanija",
+    #   )
+    # })
+    
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     
     output$plot <- renderPlotly(newPlot)
-    
-    currentCol <- changeMapCategory(globalPlotType)
-    currentTitle <- changeTitleName(globalPlotType)
-    currentBreaks <- changeMapBreaks(globalPlotType)
-    tmapProxy("map", session, {
-      tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
-        col = currentCol,
-        popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
-        title = currentTitle,
-        breaks = currentBreaks
-      )
-    })
   })
-
+  
   ### RAZDOBLJE
   observeEvent(input$razdoblje, {
     ### treba ispravnu validaciju odradit
