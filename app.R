@@ -457,7 +457,10 @@ server <- function(input, output, session) {
     razdoblje[1] <<- ifelse(is.na(input$razdoblje[1]), 1998, ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1]))
     razdoblje[2] <<- ifelse(is.na(input$razdoblje[2]), 2021, ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2]))
     
-    filtriranaZupanija <<- filtriranaZupanija %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    razdoblje <<- sort(razdoblje)
+    
+    ### bitno da je <- da se ne mijenja izvorna varijabla
+    filtriranaZupanija <- filtriranaZupanija %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     output$plot <- renderPlotly(newPlot)
