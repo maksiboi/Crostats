@@ -64,6 +64,9 @@ brakovi <- cbind(zupanije_id, brakovi[-1,])
 
 razvodi <- cbind(zupanije_id, razvodi[-1,])
 
+
+e_gradani<- e_gradani[-1,]
+
 #rodeni1 <- rodeni[-1,]
 rodeni1 <-
   pivot_longer(rodeni,
@@ -123,7 +126,9 @@ changePlotType <- function(plotType, filtriranaZupanija) {
              aes(x = Godine, y = rodeni, color = Zupanija)) +
       geom_point() +
       geom_line(aes(group = 1))  +
-      theme(axis.text.x = element_text(angle = 45))
+      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
+      ylab("Broj rođenih")+
+      ggtitle("Broj stanovnika")
     
     rodeni_barplot %>% ggplotly
     
@@ -133,7 +138,9 @@ changePlotType <- function(plotType, filtriranaZupanija) {
              aes(x = Godine, y = umrli, color = Zupanija)) +
       geom_point() +
       geom_line(aes(group = 1))  +
-      theme(axis.text.x = element_text(angle = 45))
+      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
+      ylab("Broj umrlih")+
+      ggtitle("Broj stanovnika")
     
     umrli_barplot %>% ggplotly
   } else if (plotType == 3) {
@@ -142,8 +149,10 @@ changePlotType <- function(plotType, filtriranaZupanija) {
              aes(x = Godine, y = odseljeni, color = Zupanije)) +
       geom_point() +
       geom_line(aes(group = 1))  +
+      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
       ylab("Broj odseljenog stanovništva") +
-      theme(axis.text.x = element_text(angle = 45))
+      ggtitle("Broj stanovnika")
+    
   } else if (plotType == 4) {
     doseljeni_plot <-
       ggplot(filtriranaZupanija,
@@ -151,7 +160,8 @@ changePlotType <- function(plotType, filtriranaZupanija) {
       geom_point() +
       geom_line(aes(group = 1))  +
       ylab("Broj doseljenog stanovnistva") +
-      theme(axis.text.x = element_text(angle = 45))
+      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
+      ggtitle("Broj stanovnika")
   } else if (plotType == 5) {
     stanovnistvo_plot <-
       ggplot(filtriranaZupanija,
@@ -159,7 +169,8 @@ changePlotType <- function(plotType, filtriranaZupanija) {
       geom_point() +
       geom_line(aes(group = 1))  +
       ylab("Broj stanovnistva") +
-      theme(axis.text.x = element_text(angle = 45))
+      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
+      ggtitle("Broj stanovnika")
   } else if (plotType == 6) {
     brakovi_plot <-
       ggplot(filtriranaZupanija,
@@ -167,7 +178,7 @@ changePlotType <- function(plotType, filtriranaZupanija) {
       geom_point() +
       geom_line(aes(group = 1))  +
       ylab("Broj sklopljenih brakova") +
-      theme(axis.text.x = element_text(angle = 45))
+      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))
   } else if (plotType == 7) {
     razvodi_plot <-
       ggplot(filtriranaZupanija,
@@ -175,7 +186,7 @@ changePlotType <- function(plotType, filtriranaZupanija) {
       geom_point() +
       geom_line(aes(group = 1))  +
       ylab("Broj razvoda ") +
-      theme(axis.text.x = element_text(angle = 45))
+      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))
   }
   
 }
@@ -323,7 +334,7 @@ ui <- fluidPage(
       h2("Fun Fact 2", style = "font-size:30px"),
       helpText("Facts prvi Fun Fact 1", style = "font-size:20px"),
       h2("Fun Fact 3", style = "font-size:30px"),
-      helpText("Serman je jedina vredela od svih", style = "font-size:20px"),
+      helpText("https://youtu.be/SlWq9Nag5TQ", style = "font-size:20px"),
       width = 7
     )
   )
@@ -446,7 +457,10 @@ server <- function(input, output, session) {
     razdoblje[1] <<- ifelse(is.na(input$razdoblje[1]), 1998, ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1]))
     razdoblje[2] <<- ifelse(is.na(input$razdoblje[2]), 2021, ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2]))
     
-    filtriranaZupanija <<- filtriranaZupanija %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    razdoblje <<- sort(razdoblje)
+    
+    ### bitno da je <- da se ne mijenja izvorna varijabla
+    filtriranaZupanija <- filtriranaZupanija %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
     
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     output$plot <- renderPlotly(newPlot)
