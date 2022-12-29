@@ -35,11 +35,41 @@ e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
 
 doseljeni <- read_excel("dataset.xlsx", sheet = "Doseljeni")
 odseljeni <- read_excel("dataset.xlsx", sheet = "Odseljeni")
+
+dobno_spolna <- read_excel("dataset.xlsx", sheet = "dobno_spolna")
 ```
 
+DOBNO SPOLNA PIRAMIDA
 
 ```{r}
+dobno_spolna <- dobno_spolna[,c(-2,-3,-4,-5,-6)]
+colnames(dobno_spolna)[24] <- "95 - 100"
+#names(dobno_spolna)
+dobno_spolna <- dobno_spolna[-1,]
+colnames(dobno_spolna)[1] <- "Drzava"
+
+dobno_spolna <- pivot_longer(dobno_spolna, "0 – 4":"95 - 100" ,names_to="Godine",values_to = "brojStanovnika")
 ```
+
+```{r}
+#Muska populacija ide u negativ da je s lijeve strane mogu prikazati
+
+vektor_godina <- pull(dobno_spolna,Godine)
+vektor_godina <- unique(vektor_godina)
+vektor_godina
+
+dobno_spolna <- dobno_spolna %>%mutate(
+                brojStanovnika = ifelse(Sex=="M", brojStanovnika*(-1),
+                        brojStanovnika*1))
+piramida <- ggplot(dobno_spolna,aes(x = Godine,y = brojStanovnika,fill=Sex)) + 
+    geom_bar(stat = "identity") +
+    coord_flip() + 
+    scale_x_discrete(labels=vektor_godina)+
+    scale_y_continuous(breaks  = c(0) )
+
+ggplotly(piramida)
+```
+
 
 
 ```{r}
