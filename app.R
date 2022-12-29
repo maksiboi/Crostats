@@ -23,7 +23,7 @@ razvodi <- read_excel("dataset.xlsx", sheet = "Razvodi")
 e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
 doseljeni <- read_excel("dataset.xlsx", sheet = "Doseljeni")
 odseljeni <- read_excel("dataset.xlsx", sheet = "Odseljeni")
-
+fun_facts <- read_excel("dataset.xlsx", sheet = "FunFacts")
 #konstante
 zupanije_id <-
   c(
@@ -454,23 +454,28 @@ ui <- fluidPage(
       
       plotlyOutput("plot"),
       
-      h2("Fun Fact 1", style = "font-size:30px"),
-      helpText("Serman je jedina vredela od svih", style = "font-size:20px"),
-      h2("Fun Fact 2", style = "font-size:30px"),
-      helpText("Facts prvi Fun Fact 1", style = "font-size:20px"),
-      h2("Fun Fact 3", style = "font-size:30px"),
-      helpText("https://youtu.be/SlWq9Nag5TQ", style = "font-size:20px"),
+      h2("Fun Facts", style = "font-size:30px"),
+      textOutput("prva"),
+      textOutput("druga"),
+      textOutput("treca"),
+      textOutput("cetvrta"),
       width = 7
     )
   )
 )
 
 server <- function(input, output, session) {
+  
   globalPlotType <- 1
   
   razdoblje <- c(1998, 2021)
   
   globalOdabraneZupanije <- c("Grad.Zagreb")
+  
+  output$prva <- renderText({
+    fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> odabrani
+    odabrani$fact
+  })
   
   filtriranaZupanija <-
     umrli_rodeni_brakovi_razvodi %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
@@ -497,7 +502,7 @@ server <- function(input, output, session) {
     click <- input$map_shape_click
     novi_id <- click$id
     
-    #osigurava da minimalno 1 zupanija bude odabrana
+    #osigurava da minimalno 1 zupanija bude odabrana i dodaje novu zupaniju
     if (novi_id %in% globalOdabraneZupanije &
         length(globalOdabraneZupanije) > 1) {
       globalOdabraneZupanije <<-
@@ -514,6 +519,34 @@ server <- function(input, output, session) {
       globalOdabraneZupanije <<- c(globalOdabraneZupanije[-1])
     }
     
+    cnt <- 0
+    for (zup in globalOdabraneZupanije) {
+    cnt <- cnt + 1
+    fun_facts %>% filter(zup == zupanije_id) %>% sample_n(1) -> odabrani
+    print(odabrani)
+    if (cnt == 1) {
+      print("cnt je 1")
+      output$prva <- renderText({
+        odabrani$fact
+      })
+    } else if (cnt == 2) {
+      print("cnt je 2")
+      output$druga <- renderText({
+        odabrani$fact
+      })
+    } else if (cnt == 3) {
+      print("cnt je 3")
+      output$treca <- renderText({
+        odabrani$fact
+      })
+    } else if (cnt == 4) {
+      print("cnt je 4")
+      output$cetvrta <- renderText({
+        odabrani$fact
+      })
+    }
+      print("novi krug")
+    }
     
     hr <-
       hr %>% mutate(bojaj = ifelse(zupanije_id %in% globalOdabraneZupanije,
