@@ -11,6 +11,7 @@ library(readxl)
 library(tidyr)
 library(gridExtra)
 
+#ucitavanje podataka
 stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
 narodnost <- read_excel("dataset.xlsx", sheet = "Narodnost")
 spol <- read_excel("dataset.xlsx", sheet = "Spol")
@@ -23,6 +24,7 @@ e_gradani <- read_excel("dataset.xlsx", sheet = "E-gradani")
 doseljeni <- read_excel("dataset.xlsx", sheet = "Doseljeni")
 odseljeni <- read_excel("dataset.xlsx", sheet = "Odseljeni")
 
+#konstante
 zupanije_id <-
   c(
     "Grad.Zagreb",
@@ -47,153 +49,6 @@ zupanije_id <-
     "Primorsko.goranska",
     "Zadarska"
   )
-stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1,])
-
-doseljeni <- cbind(zupanije_id, doseljeni)
-
-odseljeni <- cbind(zupanije_id, odseljeni)
-
-#narodnost <- cbind(zupanije_id, narodnost[-1,])
-#spol <- cbind(zupanije_id, spol[-1,])
-#starost <- cbind(zupanije_id, starost[-1,])
-rodeni <- cbind(zupanije_id, rodeni[-1,])
-
-umrli <- cbind(zupanije_id, umrli[-1,])
-
-brakovi <- cbind(zupanije_id, brakovi[-1,])
-
-razvodi <- cbind(zupanije_id, razvodi[-1,])
-
-
-e_gradani<- e_gradani[-1,]
-
-#rodeni1 <- rodeni[-1,]
-rodeni1 <-
-  pivot_longer(rodeni,
-               "1998":"2021" ,
-               names_to = "Godine",
-               values_to = "rodeni")
-
-#umrli1 <- umrli[-1,]
-umrli1 <-
-  pivot_longer(umrli,
-               "1998":"2021" ,
-               names_to = "Godine",
-               values_to = "umrli")
-brakovi1 <-
-  pivot_longer(brakovi,
-               "1998":"2021" ,
-               names_to = "Godine",
-               values_to = "brakovi")
-
-razvodi1 <-
-  pivot_longer(razvodi,
-               "1998":"2021" ,
-               names_to = "Godine",
-               values_to = "razvodi")
-
-### grupirano ovako zbog godina
-umrli_rodeni_brakovi_razvodi <- cbind(rodeni1, "umrli" = umrli1$umrli, "brakovi" = brakovi1$brakovi, "razvodi" = razvodi1$razvodi)
-
-doseljeni1 <-
-  pivot_longer(doseljeni,
-               "2011":"2021" ,
-               names_to = "Godine",
-               values_to = "doseljeni")
-
-odseljeni1 <-
-  pivot_longer(odseljeni,
-               "2011":"2021" ,
-               names_to = "Godine",
-               values_to = "odseljeni")
-
-odseljeni_doseljeni <-
-  cbind(odseljeni1, "doseljeni" = doseljeni1$doseljeni)
-
-stanovnistvo1 <- 
-  pivot_longer(stanovnistvo,
-               "2001":"2021",
-               names_to = "Godine",
-               values_to = "stanovnistvo")
-
-
-
-
-changePlotType <- function(plotType, filtriranaZupanija) {
-  if (plotType == 1) {
-    rodeni_barplot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = rodeni, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
-      ylab("Broj rođenih")+
-      ggtitle("Broj stanovnika")
-    
-    rodeni_barplot %>% ggplotly
-    
-  } else if (plotType == 2) {
-    umrli_barplot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = umrli, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
-      ylab("Broj umrlih")+
-      ggtitle("Broj stanovnika")
-    
-    umrli_barplot %>% ggplotly
-  } else if (plotType == 3) {
-    odseljeni_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = odseljeni, color = Zupanije)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
-      ylab("Broj odseljenog stanovništva") +
-      ggtitle("Broj stanovnika")
-    
-  } else if (plotType == 4) {
-    doseljeni_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = doseljeni, color = Zupanije)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      ylab("Broj doseljenog stanovnistva") +
-      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
-      ggtitle("Broj stanovnika")
-  } else if (plotType == 5) {
-    stanovnistvo_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = stanovnistvo, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      ylab("Broj stanovnistva") +
-      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))+
-      ggtitle("Broj stanovnika")
-  } else if (plotType == 6) {
-    brakovi_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = brakovi, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      ylab("Broj sklopljenih brakova") +
-      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))
-  } else if (plotType == 7) {
-    razvodi_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = razvodi, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      ylab("Broj razvoda ") +
-      theme(axis.text.x = element_text(angle = 45),panel.background = element_rect(fill = "white", colour = "grey50"),panel.border = element_rect(color="black",fill=NA),legend.background = element_rect(size=0.5,linetype="solid",colour="black"))
-  }
-  
-}
-
-tmap_mode("view")
-options(scipen = 999)
-hr <- st_read("fileZaCrtanje2/zupanije.shp")
 
 zupanije <-
   c(
@@ -219,33 +74,6 @@ zupanije <-
     "Primorsko-goranska",
     "Zadarska"
   )
-hr$Zupanija <- zupanije
-
-sjediste <-
-  c(
-    "Zagreb",
-    "Cakovec",
-    "Krapina",
-    "Varazdin",
-    "Virovitica",
-    "Pozega",
-    "Koprivnica",
-    "Bjelovar",
-    "Vukovar",
-    "Slavonski Brod",
-    "Karlovac",
-    "Osijek",
-    "Sisak",
-    "Gospic",
-    "Pazin",
-    "Zagreb",
-    "Sibenik",
-    "Dubrovnik",
-    "Split",
-    "Rijeka",
-    "Zadar"
-  )
-hr$SjedisteZupanije <- sjediste
 
 brojstanovnika <-
   c(
@@ -271,22 +99,266 @@ brojstanovnika <-
     269508,
     162481
   )
+
+sjediste <-
+  c(
+    "Zagreb",
+    "Cakovec",
+    "Krapina",
+    "Varazdin",
+    "Virovitica",
+    "Pozega",
+    "Koprivnica",
+    "Bjelovar",
+    "Vukovar",
+    "Slavonski Brod",
+    "Karlovac",
+    "Osijek",
+    "Sisak",
+    "Gospic",
+    "Pazin",
+    "Zagreb",
+    "Sibenik",
+    "Dubrovnik",
+    "Split",
+    "Rijeka",
+    "Zadar"
+  )
+
+#pridruzivanje podataka varijablama
+stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1, ])
+
+doseljeni <- cbind(zupanije_id, doseljeni)
+
+odseljeni <- cbind(zupanije_id, odseljeni)
+
+rodeni <- cbind(zupanije_id, rodeni[-1, ])
+
+umrli <- cbind(zupanije_id, umrli[-1, ])
+
+brakovi <- cbind(zupanije_id, brakovi[-1, ])
+
+razvodi <- cbind(zupanije_id, razvodi[-1, ])
+
+e_gradani <- e_gradani[-1, ]
+
+rodeni1 <-
+  pivot_longer(rodeni,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "rodeni")
+
+umrli1 <-
+  pivot_longer(umrli,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "umrli")
+brakovi1 <-
+  pivot_longer(brakovi,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "brakovi")
+
+razvodi1 <-
+  pivot_longer(razvodi,
+               "1998":"2021" ,
+               names_to = "Godine",
+               values_to = "razvodi")
+
+umrli_rodeni_brakovi_razvodi <-
+  cbind(
+    rodeni1,
+    "umrli" = umrli1$umrli,
+    "brakovi" = brakovi1$brakovi,
+    "razvodi" = razvodi1$razvodi
+  )
+
+doseljeni1 <-
+  pivot_longer(doseljeni,
+               "2011":"2021" ,
+               names_to = "Godine",
+               values_to = "doseljeni")
+
+odseljeni1 <-
+  pivot_longer(odseljeni,
+               "2011":"2021" ,
+               names_to = "Godine",
+               values_to = "odseljeni")
+
+odseljeni_doseljeni <-
+  cbind(odseljeni1, "doseljeni" = doseljeni1$doseljeni)
+
+stanovnistvo1 <-
+  pivot_longer(stanovnistvo,
+               "2001":"2021",
+               names_to = "Godine",
+               values_to = "stanovnistvo")
+
+hr <- st_read("fileZaCrtanje2/zupanije.shp")
+
+
+hr$Zupanija <- zupanije
+
+
+hr$SjedisteZupanije <- sjediste
+
+
 hr$brojStanovnika <- brojstanovnika
 
 hr$zupanije_id <- zupanije_id
-##### data scientist kaze nema na cemu
 hr$rodeni_2021 <- rodeni %>% select("2021") %>% pull("2021")
 hr$umrli_2021 <- umrli %>% select("2021") %>% pull("2021")
 hr$odseljeni_2021 <- odseljeni %>% select("2021") %>% pull("2021")
 hr$doseljeni_2021 <- doseljeni %>% select("2021") %>% pull("2021")
-hr$stanovnistvo_2021 <- stanovnistvo %>% select("2021") %>% pull("2021")
+hr$stanovnistvo_2021 <-
+  stanovnistvo %>% select("2021") %>% pull("2021")
 hr$brakovi_2021 <- brakovi %>% select("2021") %>% pull("2021")
 hr$razvodi_2021 <- razvodi %>% select("2021") %>% pull("2021")
+
+#postavke za tmap
+tmap_mode("view")
+options(scipen = 999)
+
+#custom funkcije
+changePlotType <- function(plotType, filtriranaZupanija) {
+  if (plotType == 1) {
+    rodeni_barplot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = rodeni, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      theme(
+        axis.text.x = element_text(angle = 45),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(color = "black", fill = NA),
+        legend.background = element_rect(
+          size = 0.5,
+          linetype = "solid",
+          colour = "black"
+        )
+      ) +
+      ylab("Broj rođenih") +
+      ggtitle("Broj stanovnika")
+    
+    rodeni_barplot %>% ggplotly
+    
+  } else if (plotType == 2) {
+    umrli_barplot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = umrli, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      theme(
+        axis.text.x = element_text(angle = 45),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(color = "black", fill = NA),
+        legend.background = element_rect(
+          size = 0.5,
+          linetype = "solid",
+          colour = "black"
+        )
+      ) +
+      ylab("Broj umrlih") +
+      ggtitle("Broj stanovnika")
+    
+    umrli_barplot %>% ggplotly
+  } else if (plotType == 3) {
+    odseljeni_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = odseljeni, color = Zupanije)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      theme(
+        axis.text.x = element_text(angle = 45),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(color = "black", fill = NA),
+        legend.background = element_rect(
+          size = 0.5,
+          linetype = "solid",
+          colour = "black"
+        )
+      ) +
+      ylab("Broj odseljenog stanovništva") +
+      ggtitle("Broj stanovnika")
+    
+  } else if (plotType == 4) {
+    doseljeni_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = doseljeni, color = Zupanije)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj doseljenog stanovnistva") +
+      theme(
+        axis.text.x = element_text(angle = 45),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(color = "black", fill = NA),
+        legend.background = element_rect(
+          size = 0.5,
+          linetype = "solid",
+          colour = "black"
+        )
+      ) +
+      ggtitle("Broj stanovnika")
+  } else if (plotType == 5) {
+    stanovnistvo_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = stanovnistvo, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj stanovnistva") +
+      theme(
+        axis.text.x = element_text(angle = 45),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(color = "black", fill = NA),
+        legend.background = element_rect(
+          size = 0.5,
+          linetype = "solid",
+          colour = "black"
+        )
+      ) +
+      ggtitle("Broj stanovnika")
+  } else if (plotType == 6) {
+    brakovi_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = brakovi, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj sklopljenih brakova") +
+      theme(
+        axis.text.x = element_text(angle = 45),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(color = "black", fill = NA),
+        legend.background = element_rect(
+          size = 0.5,
+          linetype = "solid",
+          colour = "black"
+        )
+      )
+  } else if (plotType == 7) {
+    razvodi_plot <-
+      ggplot(filtriranaZupanija,
+             aes(x = Godine, y = razvodi, color = Zupanija)) +
+      geom_point() +
+      geom_line(aes(group = 1))  +
+      ylab("Broj razvoda ") +
+      theme(
+        axis.text.x = element_text(angle = 45),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(color = "black", fill = NA),
+        legend.background = element_rect(
+          size = 0.5,
+          linetype = "solid",
+          colour = "black"
+        )
+      )
+  }
+  
+}
 
 changeMapCategory <- function(plotType) {
   if (plotType == 1) {
     "rodeni_2021"
-  } else if (plotType ==2) {
+  } else if (plotType == 2) {
     "umrli_2021"
   } else if (plotType == 3) {
     "odseljeni_2021"
@@ -304,7 +376,7 @@ changeMapCategory <- function(plotType) {
 changeTitleName <- function(plotType) {
   if (plotType == 1) {
     "Broj rođenih"
-  } else if (plotType ==2) {
+  } else if (plotType == 2) {
     "Broj umrlih"
   } else if (plotType == 3) {
     "Broj odseljenih"
@@ -321,33 +393,26 @@ changeTitleName <- function(plotType) {
 
 changeMapBreaks <- function(plotType) {
   if (plotType == 1) {
-    c(0,1000,2000,3000,4000,5000,8500) # rodeni
+    c(0, 1000, 2000, 3000, 4000, 5000, 8500) # rodeni
   } else if (plotType == 2) {
-    c(0,2000,4000,6000,8000,10000,15000) # umrli
+    c(0, 2000, 4000, 6000, 8000, 10000, 15000) # umrli
   } else if (plotType == 3) {
-    c(0,2500,4000,8000,12000,16000,20000) # odseljeni
+    c(0, 2500, 4000, 8000, 12000, 16000, 20000) # odseljeni
   } else if (plotType == 4) {
-    c(0,3000,6000,9000,12000,15000,20000) # doseljeni
+    c(0, 3000, 6000, 9000, 12000, 15000, 20000) # doseljeni
   } else if (plotType == 5) {
-    c(0,50000,100000,150000,250000,450000,800000) # stanovnistvo
+    c(0, 50000, 100000, 150000, 250000, 450000, 800000) # stanovnistvo
   } else if (plotType == 6) {
-    c(0,400,800,1200,1600,2000,4000) # brakovi
+    c(0, 400, 800, 1200, 1600, 2000, 4000) # brakovi
   } else if (plotType == 7) {
-    c(0,100,200,300,400,500,1100) # razvodi
+    c(0, 100, 200, 300, 400, 500, 1100) # razvodi
   }
 }
 
-#hr$rodeni_2021 <- rodeni %>% select("2021")
-#hr$umrli_2021 <- umrli %>% select("2021")
-#hr$odseljeni_2021 <- odseljeni %>% select("2021")
-#hr$doseljeni_2021 <- doseljeni %>% select("2021")
-#hr$stanovnistvo_2021 <- stanovnistvo %>% select("2021")
-#hr$brakovi_2021 <- brakovi %>% select("2021")
-#hr$razvodi_2021 <- razvodi %>% select("2021")
-
+#Shiny UI
 ui <- fluidPage(
   title = "CroStats",
-  tags$head(tags$link(rel="icon", href="favicon.ico")),
+  tags$head(tags$link(rel = "icon", href = "favicon.ico")),
   setBackgroundColor(
     color = c("#2171B5", "#F7FBFF", "#FF0000"),
     gradient = "linear",
@@ -360,36 +425,32 @@ ui <- fluidPage(
     mainPanel(tmapOutput(outputId = "map", height = 900),
               width = 5),
     sidebarPanel(
-      #h1("Prikaz podataka"),
-      fluidRow(
-        column(
-          3, 
-          selectInput(
-            "selectPrikaz",
-            label = h3("Kategorija:"),
-            choices = list(
-              "Rodeni" = 1,
-              "Umrli" = 2,
-              "Odseljeni" = 3,
-              "Doseljeni" = 4,
-              "Broj stanovnika" = 5,
-              "Sklopljeni brakovi" = 6,
-              "Razvodi" = 7
-            )
-          )
-        ),
-      
-        column(
-          8,
-          numericRangeInput(
-            "razdoblje",
-            label = h3("Razdoblje:"),
-            value = c(1998, 2021),
-            separator = "-"
+      fluidRow(column(
+        3,
+        selectInput(
+          "selectPrikaz",
+          label = h3("Kategorija:"),
+          choices = list(
+            "Rodeni" = 1,
+            "Umrli" = 2,
+            "Odseljeni" = 3,
+            "Doseljeni" = 4,
+            "Broj stanovnika" = 5,
+            "Sklopljeni brakovi" = 6,
+            "Razvodi" = 7
           )
         )
       ),
       
+      column(
+        8,
+        numericRangeInput(
+          "razdoblje",
+          label = h3("Razdoblje:"),
+          value = c(1998, 2021),
+          separator = "-"
+        )
+      )),
       
       plotlyOutput("plot"),
       
@@ -407,58 +468,50 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   globalPlotType <- 1
   
-  razdoblje <- c(1998,2021)
+  razdoblje <- c(1998, 2021)
   
   globalOdabraneZupanije <- c("Grad.Zagreb")
   
   filtriranaZupanija <-
-    umrli_rodeni_brakovi_razvodi %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    umrli_rodeni_brakovi_razvodi %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
+                                                                                                  Godine <= razdoblje[2])
   
-  prvaFiltriranaZupanija <-
-    umrli_rodeni_brakovi_razvodi %>% filter(zupanije_id %in% c("Grad.Zagreb")) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
-  
-  initial_plot <- changePlotType(1, prvaFiltriranaZupanija)
+  initial_plot <- changePlotType(1, filtriranaZupanija)
   
   output$plot <- renderPlotly(initial_plot)
-  
-  hr <-
-    hr %>% mutate(bojaj = ifelse(zupanije_id %in% c("Grad.Zagreb"),
-                                 Zupanija,
-                                 NA))
-  
-  Mypal <- c('#313695', '#fee090', '#d73027', '#72001a')
-  
-  #col = stupac u hr-u koji boja zupanije
-  #pallete = paleta boja... to cemo lako stilki namjestiti
-  #showNA = F znaci da se u legendi prikazuju samo odabrane zupanije
   
   output$map <- renderTmap({
     tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
       col = "rodeni_2021",
       popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
       title = "Broj rođenih",
-      breaks = c(0,1000,2000,3000,4000,5000,8500)
+      breaks = c(0, 1000, 2000, 3000, 4000, 5000, 8500)
     )
   })
-  freeToRender <- F
- 
   
+  #sprjecava dvostruko renderiranje na pocetnom loadanju stranice
+  freeToRender <- F
+  
+  ### KLIK NA DRZAVU
   observeEvent(input$map_shape_click, {
     click <- input$map_shape_click
     novi_id <- click$id
     
+    #osigurava da minimalno 1 zupanija bude odabrana
     if (novi_id %in% globalOdabraneZupanije &
         length(globalOdabraneZupanije) > 1) {
       globalOdabraneZupanije <<-
         globalOdabraneZupanije[!globalOdabraneZupanije == novi_id]
     } else if (novi_id %in% globalOdabraneZupanije &
                length(globalOdabraneZupanije) == 1) {
+      
     } else {
       globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
     }
     
+    #implementira da se zupanije ponasaju kao red
     if (length(globalOdabraneZupanije) >= 5) {
-      globalOdabraneZupanije <<- c(globalOdabraneZupanije[5])
+      globalOdabraneZupanije <<- c(globalOdabraneZupanije[-1])
     }
     
     
@@ -469,25 +522,26 @@ server <- function(input, output, session) {
     
     
     tmp <- NULL
-    if (globalPlotType %in% c(1,2,6,7)) {
+    if (globalPlotType %in% c(1, 2, 6, 7)) {
       tmp <- umrli_rodeni_brakovi_razvodi
-    } else if (globalPlotType %in% c(3,4)) {
+    } else if (globalPlotType %in% c(3, 4)) {
       tmp <- odseljeni_doseljeni
     } else if (globalPlotType == 5) {
       tmp <- stanovnistvo1
-    } 
+    }
     
-    filtriranaZupanija <<- 
-      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    filtriranaZupanija <<-
+      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
+                                                                           Godine <= razdoblje[2])
     
     newPlot <- changePlotType(globalPlotType, filtriranaZupanija)
     
     output$plot <- renderPlotly(newPlot)
   })
   
-  #### KATEGORIJE
+  ### KATEGORIJA
   observeEvent(input$selectPrikaz, {
-    
+    # kad se aplikacija prvi put loada, ovaj blok se triggera ali nije potrebno izvrsiti ga
     if (!freeToRender) {
       freeToRender <<- T
       return()
@@ -496,30 +550,23 @@ server <- function(input, output, session) {
     globalPlotType <<- as.numeric(input$selectPrikaz)
     
     tmp <- NULL
-    if (globalPlotType %in% c(1,2,6,7)) {
+    if (globalPlotType %in% c(1, 2, 6, 7)) {
       tmp <- umrli_rodeni_brakovi_razvodi
-    } else if (globalPlotType %in% c(3,4)) {
+    } else if (globalPlotType %in% c(3, 4)) {
       tmp <- odseljeni_doseljeni
     } else if (globalPlotType == 5) {
       tmp <- stanovnistvo1
-    } 
+    }
     
-    filtriranaZupanija <<- 
-      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
-    
-    # KAD SE UPDATEA HR ONDA CE SE MIJENJATI MAPA
-    # tmapProxy("map", session, {
-    #   tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
-    #     col = "brojStanovnika",
-    #     popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
-    #     title = "Zupanija",
-    #   )
-    # })
+    filtriranaZupanija <<-
+      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
+                                                                           Godine <= razdoblje[2])
     
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     
     output$plot <- renderPlotly(newPlot)
     
+    #prikaz boja na mapi ovisno o kategoriji
     currentCol <- changeMapCategory(globalPlotType)
     currentTitle <- changeTitleName(globalPlotType)
     currentBreaks <- changeMapBreaks(globalPlotType)
@@ -536,14 +583,24 @@ server <- function(input, output, session) {
   
   ### RAZDOBLJE
   observeEvent(input$razdoblje, {
-    ### treba ispravnu validaciju odradit
-    razdoblje[1] <<- ifelse(is.na(input$razdoblje[1]), 1998, ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1]))
-    razdoblje[2] <<- ifelse(is.na(input$razdoblje[2]), 2021, ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2]))
+    razdoblje[1] <<-
+      ifelse(
+        is.na(input$razdoblje[1]),
+        1998,
+        ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1])
+      )
+    razdoblje[2] <<-
+      ifelse(
+        is.na(input$razdoblje[2]),
+        2021,
+        ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2])
+      )
     
     razdoblje <<- sort(razdoblje)
     
-    ### bitno da je <- da se ne mijenja izvorna varijabla
-    filtriranaZupanija <- filtriranaZupanija %>% filter(Godine >= razdoblje[1] & Godine <= razdoblje[2])
+    filtriranaZupanija <-
+      filtriranaZupanija %>% filter(Godine >= razdoblje[1] &
+                                      Godine <= razdoblje[2])
     
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     output$plot <- renderPlotly(newPlot)
