@@ -260,4 +260,11 @@ ggplotly(odseljeni_plot)
 ggplotly(doseljeni_plot)
 
 ```
+```{r}
+spremi <- rodeni %>% select("2021")
+View(spremi)
+spremi1 <- pull(spremi,"2021")
+class(spremi1)
+spremi1
+```
 
