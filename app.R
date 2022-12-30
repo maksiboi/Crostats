@@ -126,21 +126,21 @@ sjediste <-
   )
 
 #pridruzivanje podataka varijablama
-stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1, ])
+stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1,])
 
 doseljeni <- cbind(zupanije_id, doseljeni)
 
 odseljeni <- cbind(zupanije_id, odseljeni)
 
-rodeni <- cbind(zupanije_id, rodeni[-1, ])
+rodeni <- cbind(zupanije_id, rodeni[-1,])
 
-umrli <- cbind(zupanije_id, umrli[-1, ])
+umrli <- cbind(zupanije_id, umrli[-1,])
 
-brakovi <- cbind(zupanije_id, brakovi[-1, ])
+brakovi <- cbind(zupanije_id, brakovi[-1,])
 
-razvodi <- cbind(zupanije_id, razvodi[-1, ])
+razvodi <- cbind(zupanije_id, razvodi[-1,])
 
-e_gradani <- e_gradani[-1, ]
+e_gradani <- e_gradani[-1,]
 
 rodeni1 <-
   pivot_longer(rodeni,
@@ -424,52 +424,74 @@ ui <- fluidPage(
     "CroStats", align = "center", style = "font-size:60px"
   )),
   sidebarLayout(
-    mainPanel(tmapOutput(outputId = "map", height = 900),
-              width = 5),
-    sidebarPanel(
-      fluidRow(column(
-        3,
-        selectInput(
-          "selectPrikaz",
-          label = h3("Kategorija:"),
-          choices = list(
-            "Rodeni" = 1,
-            "Umrli" = 2,
-            "Odseljeni" = 3,
-            "Doseljeni" = 4,
-            "Broj stanovnika" = 5,
-            "Sklopljeni brakovi" = 6,
-            "Razvodi" = 7
-          )
+
+  mainPanel(
+    tags$head(
+      tags$style(
+        type = "text/css",
+        "
+             #loadmessage {
+               position:fixed;
+               top: 25%;
+               left: 0%;
+               height:150px;
+               width: 100%;
+               padding: 5px 0px 5px 0px;
+               text-align: center;
+               font-weight: bold;
+               font-size: 50px;
+               color: #FFFFFF;
+               background-color: #FF6F61;
+               z-index: 105;
+             }
+          "
+      )
+    ),
+    conditionalPanel(condition = "$('html').hasClass('shiny-busy')",
+                     tags$div("Kliknite na županiju kako biste prikazali podatke", id = "loadmessage")),
+    tmapOutput(outputId = "map", height = 900),
+            width = 5),
+  sidebarPanel(
+    fluidRow(column(
+      3,
+      selectInput(
+        "selectPrikaz",
+        label = h3("Kategorija:"),
+        choices = list(
+          "Rodeni" = 1,
+          "Umrli" = 2,
+          "Odseljeni" = 3,
+          "Doseljeni" = 4,
+          "Broj stanovnika" = 5,
+          "Sklopljeni brakovi" = 6,
+          "Razvodi" = 7
         )
-      ),
-      
-      column(
-        8,
-        numericRangeInput(
-          "razdoblje",
-          label = h3("Razdoblje:"),
-          value = c(1998, 2021),
-          separator = "-"
-        )
-      )),
-      
-      plotlyOutput("plot"),
-      
-      h2("Fun Facts", style = "font-size:30px"),
-      textOutput("prva"),
-      textOutput("druga"),
-      textOutput("treca"),
-      textOutput("cetvrta"),
-      width = 7
-    )
+      )
+    ),
+    
+    column(
+      8,
+      numericRangeInput(
+        "razdoblje",
+        label = h3("Razdoblje:"),
+        value = c(1998, 2021),
+        separator = "-"
+      )
+    )),
+    
+    plotlyOutput("plot"),
+    
+    h2("Fun Facts", style = "font-size:30px"),
+    textOutput("prva"),
+    textOutput("druga"),
+    textOutput("treca"),
+    textOutput("cetvrta"),
+    width = 7
   )
+)
 )
 
 server <- function(input, output, session) {
-  
-  
-  
   globalPlotType <- 1
   
   razdoblje <- c(1998, 2021)
@@ -481,7 +503,7 @@ server <- function(input, output, session) {
   output$prva <- renderText({
     fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
     odabrani <<- rbind(odabrani, pom)
-    odabrani[1,]$fact
+    odabrani[1, ]$fact
   })
   
   filtriranaZupanija <-
@@ -503,7 +525,7 @@ server <- function(input, output, session) {
   
   #sprjecava dvostruko renderiranje na pocetnom loadanju stranice
   freeToRender <- F
-
+  
   
   ### KLIK NA DRZAVU
   observeEvent(input$map_shape_click, {
@@ -528,41 +550,41 @@ server <- function(input, output, session) {
       zupanija_visak <- globalOdabraneZupanije[1]
       if (nrow(odabrani) == 4) {
         odabrani <<- odabrani %>% filter(zupanije_id != zupanija_visak)
-        fun_facts %>% filter(novi_id == zupanije_id ) %>% sample_n(1) -> pom
-        odabrani <<- rbind(odabrani,pom)
+        fun_facts %>% filter(novi_id == zupanije_id) %>% sample_n(1) -> pom
+        odabrani <<- rbind(odabrani, pom)
       } else {
-        fun_facts %>% filter(novi_id == zupanije_id ) %>% sample_n(1) -> pom
-        odabrani <<- rbind(odabrani,pom)
+        fun_facts %>% filter(novi_id == zupanije_id) %>% sample_n(1) -> pom
+        odabrani <<- rbind(odabrani, pom)
       }
     }
-
+    
     
     #implementira da se zupanije ponasaju kao red
     if (length(globalOdabraneZupanije) >= 5) {
       globalOdabraneZupanije <<- c(globalOdabraneZupanije[-1])
     }
-
-
     
-     View(odabrani)
+    
+    
+    View(odabrani)
     output$prva <- renderText({
-           odabrani[1,]$fact
-         })
+      odabrani[1, ]$fact
+    })
     # ifelse(is.na(odabrani[2,]$fact), output$druga <- renderText("kurcina"), output$druga <- renderText({odabrani[2,]$fact})
     # )
     # print(is.na(odabrani[2,]$fact))
     output$druga <- renderText({
-      odabrani[2,]$fact
+      odabrani[2, ]$fact
     })
     # print(odabrani[2,]$fact)
     output$treca <- renderText({
-      odabrani[3,]$fact
+      odabrani[3, ]$fact
     })
     output$cetvrta <- renderText({
-      odabrani[4,]$fact
+      odabrani[4, ]$fact
     })
-
-
+    
+    
     
     
     
