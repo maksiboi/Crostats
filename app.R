@@ -218,6 +218,8 @@ hr$razvodi_2021 <- razvodi %>% select("2021") %>% pull("2021")
 #postavke za tmap
 tmap_mode("view")
 options(scipen = 999)
+set.seed(101)
+
 
 #custom funkcije
 changePlotType <- function(plotType, filtriranaZupanija) {
@@ -466,14 +468,19 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+  
+  
   globalPlotType <- 1
   
   razdoblje <- c(1998, 2021)
   
   globalOdabraneZupanije <- c("Grad.Zagreb")
   
+  odabrani <- data.frame()
+  
   output$prva <- renderText({
-    fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> odabrani
+    fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
+    odabrani <- rbind(pom)
     odabrani$fact
   })
   
@@ -496,6 +503,7 @@ server <- function(input, output, session) {
   
   #sprjecava dvostruko renderiranje na pocetnom loadanju stranice
   freeToRender <- F
+
   
   ### KLIK NA DRZAVU
   observeEvent(input$map_shape_click, {
@@ -518,34 +526,41 @@ server <- function(input, output, session) {
     if (length(globalOdabraneZupanije) >= 5) {
       globalOdabraneZupanije <<- c(globalOdabraneZupanije[-1])
     }
-    
+
+
     cnt <- 0
+    
+
     for (zup in globalOdabraneZupanije) {
     cnt <- cnt + 1
-    fun_facts %>% filter(zup == zupanije_id) %>% sample_n(1) -> odabrani
-    print(odabrani)
+    
+    fun_facts %>% filter(zup == zupanije_id ) %>% sample_n(1) -> pom
+  
+    odabrani <- rbind(odabrani,pom)
+    
+    View(odabrani)    
     if (cnt == 1) {
-      print("cnt je 1")
       output$prva <- renderText({
-        odabrani$fact
+        odabrani[1,]$fact
       })
     } else if (cnt == 2) {
-      print("cnt je 2")
+
       output$druga <- renderText({
-        odabrani$fact
+        odabrani[2,]$fact
       })
     } else if (cnt == 3) {
-      print("cnt je 3")
+
       output$treca <- renderText({
-        odabrani$fact
+        odabrani[3,]$fact
       })
     } else if (cnt == 4) {
-      print("cnt je 4")
+
       output$cetvrta <- renderText({
-        odabrani$fact
+        odabrani[4,]$fact
       })
     }
       print("novi krug")
+
     }
     
     hr <-
