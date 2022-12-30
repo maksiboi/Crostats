@@ -562,7 +562,6 @@ server <- function(input, output, session) {
     
     
     
-    View(odabrani)
     output$prva <- renderText({
       odabrani[1, ]$fact
     })
