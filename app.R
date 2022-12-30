@@ -480,8 +480,8 @@ server <- function(input, output, session) {
   
   output$prva <- renderText({
     fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
-    odabrani <- rbind(pom)
-    odabrani$fact
+    odabrani <<- rbind(odabrani, pom)
+    odabrani[1,]$fact
   })
   
   filtriranaZupanija <-
@@ -510,17 +510,32 @@ server <- function(input, output, session) {
     click <- input$map_shape_click
     novi_id <- click$id
     
+    set.seed(Sys.time())
     #osigurava da minimalno 1 zupanija bude odabrana i dodaje novu zupaniju
     if (novi_id %in% globalOdabraneZupanije &
         length(globalOdabraneZupanije) > 1) {
       globalOdabraneZupanije <<-
         globalOdabraneZupanije[!globalOdabraneZupanije == novi_id]
+      ### ff implementacija
+      odabrani <<- odabrani %>% filter(zupanije_id != novi_id)
     } else if (novi_id %in% globalOdabraneZupanije &
                length(globalOdabraneZupanije) == 1) {
       
     } else {
       globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
+      
+      #### ff implementacija
+      zupanija_visak <- globalOdabraneZupanije[1]
+      if (nrow(odabrani) == 4) {
+        odabrani <<- odabrani %>% filter(zupanije_id != zupanija_visak)
+        fun_facts %>% filter(novi_id == zupanije_id ) %>% sample_n(1) -> pom
+        odabrani <<- rbind(odabrani,pom)
+      } else {
+        fun_facts %>% filter(novi_id == zupanije_id ) %>% sample_n(1) -> pom
+        odabrani <<- rbind(odabrani,pom)
+      }
     }
+
     
     #implementira da se zupanije ponasaju kao red
     if (length(globalOdabraneZupanije) >= 5) {
@@ -528,40 +543,28 @@ server <- function(input, output, session) {
     }
 
 
-    cnt <- 0
     
+     View(odabrani)
+    output$prva <- renderText({
+           odabrani[1,]$fact
+         })
+    # ifelse(is.na(odabrani[2,]$fact), output$druga <- renderText("kurcina"), output$druga <- renderText({odabrani[2,]$fact})
+    # )
+    # print(is.na(odabrani[2,]$fact))
+    output$druga <- renderText({
+      odabrani[2,]$fact
+    })
+    # print(odabrani[2,]$fact)
+    output$treca <- renderText({
+      odabrani[3,]$fact
+    })
+    output$cetvrta <- renderText({
+      odabrani[4,]$fact
+    })
 
-    for (zup in globalOdabraneZupanije) {
-    cnt <- cnt + 1
+
     
-    fun_facts %>% filter(zup == zupanije_id ) %>% sample_n(1) -> pom
-  
-    odabrani <- rbind(odabrani,pom)
     
-    View(odabrani)    
-    if (cnt == 1) {
-      output$prva <- renderText({
-        odabrani[1,]$fact
-      })
-    } else if (cnt == 2) {
-
-      output$druga <- renderText({
-        odabrani[2,]$fact
-      })
-    } else if (cnt == 3) {
-
-      output$treca <- renderText({
-        odabrani[3,]$fact
-      })
-    } else if (cnt == 4) {
-
-      output$cetvrta <- renderText({
-        odabrani[4,]$fact
-      })
-    }
-      print("novi krug")
-
-    }
     
     hr <-
       hr %>% mutate(bojaj = ifelse(zupanije_id %in% globalOdabraneZupanije,
