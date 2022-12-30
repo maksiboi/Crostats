@@ -431,11 +431,7 @@ ui <- fluidPage(
         type = "text/css",
         "
              #loadmessage {
-               position:fixed;
-               top: 25%;
-               left: 0%;
-               height:150px;
-               width: 100%;
+
                padding: 5px 0px 5px 0px;
                text-align: center;
                font-weight: bold;
