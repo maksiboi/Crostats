@@ -490,6 +490,7 @@ server <- function(input, output, session) {
   odabrani <- data.frame()
   
   output$prva <- renderText({
+    set.seed(Sys.time())
     fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
     odabrani <<- rbind(odabrani, pom)
     odabrani[1,]$fact
@@ -537,6 +538,7 @@ server <- function(input, output, session) {
       
       #### ff implementacija
       zupanija_visak <- globalOdabraneZupanije[1]
+      set.seed(Sys.time())
       if (nrow(odabrani) == 4) {
         odabrani <<- odabrani %>% filter(zupanije_id != zupanija_visak)
         fun_facts %>% filter(novi_id == zupanije_id) %>% sample_n(1) -> pom
@@ -555,22 +557,39 @@ server <- function(input, output, session) {
     
     
     
-    output$prva <- renderText({
-      odabrani[1,]$fact
-    })
-    # ifelse(is.na(odabrani[2,]$fact), output$druga <- renderText("kurcina"), output$druga <- renderText({odabrani[2,]$fact})
-    # )
-    # print(is.na(odabrani[2,]$fact))
-    output$druga <- renderText({
-      odabrani[2,]$fact
-    })
-    # print(odabrani[2,]$fact)
-    output$treca <- renderText({
-      odabrani[3,]$fact
-    })
-    output$cetvrta <- renderText({
-      odabrani[4,]$fact
-    })
+
+    if (!is.na(odabrani[1,]$fact)) {
+      output$prva <- renderText({
+        odabrani[1,]$fact
+      })
+    } else {
+      output$prva <- renderText({" "})
+    }
+
+    if (!is.na(odabrani[2,]$fact)) {
+      output$druga <- renderText({
+        odabrani[2,]$fact
+      })
+    } else {
+      output$druga <- renderText({" "})
+    }
+
+    
+    if (!is.na(odabrani[3,]$fact)) {
+      output$treca <- renderText({
+        odabrani[3,]$fact
+      })
+    } else {
+      output$treca <- renderText({" "})
+    }
+ 
+    if (!is.na(odabrani[4,]$fact)) {
+      output$cetvrta <- renderText({
+        odabrani[4,]$fact
+      })
+    } else {
+      output$cetvrta <- renderText({" "})
+    }
     
     
     
