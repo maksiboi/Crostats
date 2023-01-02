@@ -493,7 +493,7 @@ server <- function(input, output, session) {
     set.seed(Sys.time())
     fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
     odabrani <<- rbind(odabrani, pom)
-    odabrani[1,]$fact
+    paste("• ",odabrani[1,]$fact)
   })
   
   filtriranaZupanija <-
@@ -560,7 +560,7 @@ server <- function(input, output, session) {
 
     if (!is.na(odabrani[1,]$fact)) {
       output$prva <- renderText({
-        odabrani[1,]$fact
+        paste("• ",odabrani[1,]$fact)
       })
     } else {
       output$prva <- renderText({" "})
@@ -568,7 +568,7 @@ server <- function(input, output, session) {
 
     if (!is.na(odabrani[2,]$fact)) {
       output$druga <- renderText({
-        odabrani[2,]$fact
+        paste("• ",odabrani[2,]$fact)
       })
     } else {
       output$druga <- renderText({" "})
@@ -577,7 +577,7 @@ server <- function(input, output, session) {
     
     if (!is.na(odabrani[3,]$fact)) {
       output$treca <- renderText({
-        odabrani[3,]$fact
+        paste("• ",odabrani[3,]$fact)
       })
     } else {
       output$treca <- renderText({" "})
@@ -585,7 +585,7 @@ server <- function(input, output, session) {
  
     if (!is.na(odabrani[4,]$fact)) {
       output$cetvrta <- renderText({
-        odabrani[4,]$fact
+        paste("• ",odabrani[4,]$fact)
       })
     } else {
       output$cetvrta <- renderText({" "})
