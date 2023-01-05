@@ -10,6 +10,7 @@ library(shinyWidgets)
 library(readxl)
 library(tidyr)
 library(gridExtra)
+library(shinythemes)
 
 #ucitavanje podataka
 stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
@@ -415,11 +416,12 @@ changeMapBreaks <- function(plotType) {
 ui <- fluidPage(
   title = "CroStats",
   tags$head(tags$link(rel = "icon", href = "favicon.ico")),
-  setBackgroundColor(
-    color = c("#2171B5", "#F7FBFF", "#FF0000"),
-    gradient = "linear",
-    direction = "left"
-  ),
+  theme = shinytheme("superhero"),
+  # setBackgroundColor(
+  #   color = c("#2171B5", "#F7FBFF", "#FF0000"),
+  #   gradient = "linear",
+  #   direction = "left"
+  # ),
   titlePanel(title = h1(
     "CroStats", align = "center", style = "font-size:60px"
   )),
@@ -471,10 +473,10 @@ ui <- fluidPage(
       plotlyOutput("plot"),
       
       h2("Fun Facts", style = "font-size:30px"),
-      textOutput("prva"),
-      textOutput("druga"),
-      textOutput("treca"),
-      textOutput("cetvrta"),
+      span(textOutput("prva"), style="font-size:20px"),
+      span(textOutput("druga"), style="font-size:20px"),
+      span(textOutput("treca"), style="font-size:20px"),
+      span(textOutput("cetvrta"), style="font-size:20px"),
       width = 7
     )
   )
