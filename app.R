@@ -442,7 +442,7 @@ changeMapBreaks <- function(plotType) {
 ui <- fluidPage(
   title = "CroStats",
   tags$head(tags$link(rel = "icon", href = "favicon.ico")),
-  theme = shinytheme("superhero"),
+  theme = shinytheme("paper"),
   # setBackgroundColor(
   #   color = c("#2171B5", "#F7FBFF", "#FF0000"),
   #   gradient = "linear",
