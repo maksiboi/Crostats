@@ -11,6 +11,7 @@ library(readxl)
 library(tidyr)
 library(gridExtra)
 library(shinythemes)
+library(webshot)
 
 #ucitavanje podataka
 stanovnistvo <- read_excel("dataset.xlsx", sheet = "Stanovnistvo")
@@ -746,7 +747,12 @@ server <- function(input, output, session) {
       paste(gsub(" ", "_", changeTitleName(globalPlotType)),curr_min, curr_max, ".png", sep="_")
     },
     content = function(file) {
-      ggsave(file, changePlotType(globalPlotType, filtriranaZupanija), device = "png")
+      # ggsave(file, renderPlotly(changePlotType(globalPlotType, filtriranaZupanija)), device = "png") # ovo radi al exporta ggplot graf koji ne valja
+      # plotly::export(p = ggplotly(changePlotType(globalPlotType, filtriranaZupanija)),
+      #                file = file) # deprecated
+      # fig <- ggplotly(changePlotType(globalPlotType, filtriranaZupanija)) %>% add_surface()
+      # 
+      # orca(fig, file) # moras skinut lokalno
 
     }
   )
