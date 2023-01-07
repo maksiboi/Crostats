@@ -673,7 +673,9 @@ server <- function(input, output, session) {
       tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
                                                                            Godine <= razdoblje[2])
     
-    # print(filtriranaZupanija %>% select(Godine) %>% slice_max(n = 1, order_by = ))
+
+    
+    print(razdoblje)
     
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     
@@ -691,6 +693,8 @@ server <- function(input, output, session) {
         breaks = currentBreaks
       )
     })
+    
+    
     
   })
   
@@ -729,11 +733,20 @@ server <- function(input, output, session) {
   )
   output$downloadPlot <- downloadHandler(
     filename = function() {
-      paste(gsub(" ", "_", changeTitleName(globalPlotType)), ".png", sep="")
+      ### hendlanje naziva .png filea koje korisnik preuzima
+      curr_max <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% max()
+      curr_min <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% min()
+
+      if (razdoblje[1] > curr_min) {
+        curr_min <- razdoblje[1]
+      }
+      if (razdoblje[2] < curr_max) {
+        curr_max <- razdoblje[2]
+      }
+      paste(gsub(" ", "_", changeTitleName(globalPlotType)),curr_min, curr_max, ".png", sep="_")
     },
     content = function(file) {
-      # device <- function(..., width, height) grDevices::png(..., width = width, height = height, res = 300, units = "in")
-      ggsave(file, changePlotType(globalPlotType, filtriranaZupanija))
+      ggsave(file, changePlotType(globalPlotType, filtriranaZupanija), device = "png")
 
     }
   )
