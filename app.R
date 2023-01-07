@@ -460,7 +460,7 @@ ui <- fluidPage(
       @import url('https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap');
       h6 {
         font-family: 'Yusei Magic', sans-serif;
-                color: white;
+                color: black;
       }"
       )
     )),
@@ -496,11 +496,27 @@ ui <- fluidPage(
           separator = "-"
         )
       )),
+      fluidRow(column(
+        6,
+        tags$head(tags$style(
+          HTML(
+            "
+      @import url('https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap');
+      h6 {
+        font-family: 'Yusei Magic', sans-serif;
+                color: black;
+      }"
+          )
+        )),
+        h6("Kliknite na prvu ikonu u zaglavlju prikaza za preuzimanje"),
+      )),
       
       plotlyOutput("plot"),
       
-      span(downloadButton("downloadPlot", "Preuzmite prikaz"),
-           downloadButton("downloadData", "Preuzmite podatke")),
+      span(
+        # downloadButton("downloadPlot", "Preuzmite prikaz"),
+        downloadButton("downloadData", "Preuzmite podatke")
+        ),
       
       h2("Fun Facts", style = "font-size:30px"),
       span(textOutput("prva"), style="font-size:20px"),
@@ -732,30 +748,30 @@ server <- function(input, output, session) {
       write.csv(changeData(globalPlotType), file)
     }
   )
-  output$downloadPlot <- downloadHandler(
-    filename = function() {
-      ### hendlanje naziva .png filea koje korisnik preuzima
-      curr_max <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% max()
-      curr_min <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% min()
-
-      if (razdoblje[1] > curr_min) {
-        curr_min <- razdoblje[1]
-      }
-      if (razdoblje[2] < curr_max) {
-        curr_max <- razdoblje[2]
-      }
-      paste(gsub(" ", "_", changeTitleName(globalPlotType)),curr_min, curr_max, ".png", sep="_")
-    },
-    content = function(file) {
-      # ggsave(file, renderPlotly(changePlotType(globalPlotType, filtriranaZupanija)), device = "png") # ovo radi al exporta ggplot graf koji ne valja
-      # plotly::export(p = ggplotly(changePlotType(globalPlotType, filtriranaZupanija)),
-      #                file = file) # deprecated
-      # fig <- ggplotly(changePlotType(globalPlotType, filtriranaZupanija)) %>% add_surface()
-      # 
-      # orca(fig, file) # moras skinut lokalno
-
-    }
-  )
+  # output$downloadPlot <- downloadHandler(
+  #   filename = function() {
+  #     ### hendlanje naziva .png filea koje korisnik preuzima
+  #     curr_max <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% max()
+  #     curr_min <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% min()
+  # 
+  #     if (razdoblje[1] > curr_min) {
+  #       curr_min <- razdoblje[1]
+  #     }
+  #     if (razdoblje[2] < curr_max) {
+  #       curr_max <- razdoblje[2]
+  #     }
+  #     paste(gsub(" ", "_", changeTitleName(globalPlotType)),curr_min, curr_max, ".png", sep="_")
+  #   },
+  #   content = function(file) {
+  #     # ggsave(file, renderPlotly(changePlotType(globalPlotType, filtriranaZupanija)), device = "png") # ovo radi al exporta ggplot graf koji ne valja
+  #     # plotly::export(p = ggplotly(changePlotType(globalPlotType, filtriranaZupanija)),
+  #     #                file = file) # deprecated
+  #     # fig <- ggplotly(changePlotType(globalPlotType, filtriranaZupanija)) %>% add_surface()
+  #     # 
+  #     # orca(fig, file) # moras skinut lokalno
+  # 
+  #   }
+  # )
   
   
 }
