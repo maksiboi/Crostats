@@ -128,21 +128,21 @@ sjediste <-
   )
 
 #pridruzivanje podataka varijablama
-stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1, ])
+stanovnistvo <- cbind(zupanije_id, stanovnistvo[-1,])
 
 doseljeni <- cbind(zupanije_id, doseljeni)
 
 odseljeni <- cbind(zupanije_id, odseljeni)
 
-rodeni <- cbind(zupanije_id, rodeni[-1, ])
+rodeni <- cbind(zupanije_id, rodeni[-1,])
 
-umrli <- cbind(zupanije_id, umrli[-1, ])
+umrli <- cbind(zupanije_id, umrli[-1,])
 
-brakovi <- cbind(zupanije_id, brakovi[-1, ])
+brakovi <- cbind(zupanije_id, brakovi[-1,])
 
-razvodi <- cbind(zupanije_id, razvodi[-1, ])
+razvodi <- cbind(zupanije_id, razvodi[-1,])
 
-e_gradani <- e_gradani[-1, ]
+e_gradani <- e_gradani[-1,]
 
 rodeni1 <-
   pivot_longer(rodeni,
@@ -226,8 +226,6 @@ set.seed(101)
 #custom funkcije
 changePlotType <- function(plotType, filtriranaZupanija) {
   if (plotType == 1) {
-    
-    
     stanovnistvo_plot <-
       ggplot(filtriranaZupanija,
              aes(x = Godine, y = stanovnistvo, color = Zupanija)) +
@@ -245,7 +243,7 @@ changePlotType <- function(plotType, filtriranaZupanija) {
         )
       ) +
       ggtitle("Broj stanovnika")
-
+    
     
   } else if (plotType == 2) {
     rodeni_barplot <-
@@ -442,13 +440,7 @@ changeMapBreaks <- function(plotType) {
 #Shiny UI
 ui <- fluidPage(
   title = "CroStats",
-  tags$head(tags$link(rel = "icon", href = "favicon.ico")),
   theme = shinytheme("paper"),
-  # setBackgroundColor(
-  #   color = c("#2171B5", "#F7FBFF", "#FF0000"),
-  #   gradient = "linear",
-  #   direction = "left"
-  # ),
   titlePanel(title = h1(
     "CroStats", align = "center", style = "font-size:60px"
   )),
@@ -458,16 +450,41 @@ ui <- fluidPage(
       HTML(
         "
       @import url('https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+      h1 {
+        font-family: 'Yusei Magic', sans-serif;
+        color: black;
+        margin-bottom: 0;
+      }
+      h2 {
+        font-family: 'Yusei Magic', sans-serif;
+        color: black;
+      }
+      h3 {
+        font-family: 'Yusei Magic', sans-serif;
+        color: black;
+      }
       h6 {
         font-family: 'Yusei Magic', sans-serif;
-                color: black;
-      }"
+        color: black;
+      }
+      .shiny-text-output {
+        font-family: 'Roboto', sans-serif;
+            color: black;
+      }
+      .well {
+        padding-top: 0px;
+      }
+      .selectize-input {
+        background-color: #f5f5f5;
+      }
+        "
       )
     )),
     h6("Kliknite na županiju kako biste vidjeli podatke o njoj"),
   )),
   sidebarLayout(
-    mainPanel(tmapOutput(outputId = "map", height = 900),
+    mainPanel(tmapOutput(outputId = "map", height = 700),
               width = 5),
     sidebarPanel(
       fluidRow(column(
@@ -498,31 +515,19 @@ ui <- fluidPage(
       )),
       fluidRow(column(
         6,
-        tags$head(tags$style(
-          HTML(
-            "
-      @import url('https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap');
-      h6 {
-        font-family: 'Yusei Magic', sans-serif;
-                color: black;
-      }"
-          )
-        )),
         h6("Kliknite na prvu ikonu u zaglavlju prikaza za preuzimanje"),
       )),
       
       plotlyOutput("plot"),
-      
-      span(
-        # downloadButton("downloadPlot", "Preuzmite prikaz"),
-        downloadButton("downloadData", "Preuzmite podatke")
-        ),
+      br(),
+      span(# downloadButton("downloadPlot", "Preuzmite prikaz"),
+        downloadButton("downloadData", "Preuzmite podatke")),
       
       h2("Fun Facts", style = "font-size:30px"),
-      span(textOutput("prva"), style="font-size:20px"),
-      span(textOutput("druga"), style="font-size:20px"),
-      span(textOutput("treca"), style="font-size:20px"),
-      span(textOutput("cetvrta"), style="font-size:20px"),
+      span(textOutput("prva"), style = "font-size:20px"),
+      span(textOutput("druga"), style = "font-size:20px"),
+      span(textOutput("treca"), style = "font-size:20px"),
+      span(textOutput("cetvrta"), style = "font-size:20px"),
       width = 7
     )
   )
@@ -541,12 +546,12 @@ server <- function(input, output, session) {
     set.seed(Sys.time())
     fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
     odabrani <<- rbind(odabrani, pom)
-    paste("• ",odabrani[1,]$fact)
+    paste("• ", odabrani[1, ]$fact)
   })
   
   filtriranaZupanija <-
     stanovnistvo1 %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
-                                                                                                  Godine <= razdoblje[2])
+                                                                                   Godine <= razdoblje[2])
   
   initial_plot <- changePlotType(1, filtriranaZupanija)
   
@@ -603,52 +608,52 @@ server <- function(input, output, session) {
       globalOdabraneZupanije <<- c(globalOdabraneZupanije[-1])
     }
     
-    
-    
-
-    if (!is.na(odabrani[1,]$fact)) {
+    if (!is.na(odabrani[1, ]$fact)) {
       output$prva <- renderText({
-        paste("• ",odabrani[1,]$fact)
+        paste("• ", odabrani[1, ]$fact)
       })
     } else {
-      output$prva <- renderText({" "})
+      output$prva <- renderText({
+        " "
+      })
     }
-
-    if (!is.na(odabrani[2,]$fact)) {
+    
+    if (!is.na(odabrani[2, ]$fact)) {
       output$druga <- renderText({
-        paste("• ",odabrani[2,]$fact)
+        paste("• ", odabrani[2, ]$fact)
       })
     } else {
-      output$druga <- renderText({" "})
+      output$druga <- renderText({
+        " "
+      })
     }
-
     
-    if (!is.na(odabrani[3,]$fact)) {
+    
+    if (!is.na(odabrani[3, ]$fact)) {
       output$treca <- renderText({
-        paste("• ",odabrani[3,]$fact)
+        paste("• ", odabrani[3, ]$fact)
       })
     } else {
-      output$treca <- renderText({" "})
+      output$treca <- renderText({
+        " "
+      })
     }
- 
-    if (!is.na(odabrani[4,]$fact)) {
+    
+    if (!is.na(odabrani[4, ]$fact)) {
       output$cetvrta <- renderText({
-        paste("• ",odabrani[4,]$fact)
+        paste("• ", odabrani[4, ]$fact)
       })
     } else {
-      output$cetvrta <- renderText({" "})
+      output$cetvrta <- renderText({
+        " "
+      })
     }
-    
-    
-    
-    
     
     hr <-
       hr %>% mutate(bojaj = ifelse(zupanije_id %in% globalOdabraneZupanije,
                                    Zupanija,
                                    NA))
-    
-    
+  
     tmp <- NULL
     if (globalPlotType %in% c(2, 3, 6, 7)) {
       tmp <- umrli_rodeni_brakovi_razvodi
@@ -690,10 +695,6 @@ server <- function(input, output, session) {
       tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
                                                                            Godine <= razdoblje[2])
     
-
-    
-    print(razdoblje)
-    
     changePlotType(globalPlotType, filtriranaZupanija) -> newPlot
     
     output$plot <- renderPlotly(newPlot)
@@ -710,9 +711,6 @@ server <- function(input, output, session) {
         breaks = currentBreaks
       )
     })
-    
-    
-    
   })
   
   ### RAZDOBLJE
@@ -742,37 +740,12 @@ server <- function(input, output, session) {
   
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste(gsub(" ", "_", changeTitleName(globalPlotType)), ".csv", sep="")
+      paste(gsub(" ", "_", changeTitleName(globalPlotType)), ".csv", sep = "")
     },
     content = function(file) {
       write.csv(changeData(globalPlotType), file)
     }
   )
-  # output$downloadPlot <- downloadHandler(
-  #   filename = function() {
-  #     ### hendlanje naziva .png filea koje korisnik preuzima
-  #     curr_max <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% max()
-  #     curr_min <- filtriranaZupanija %>% select(Godine) %>% pull() %>% lapply(as.numeric) %>% unlist() %>% min()
-  # 
-  #     if (razdoblje[1] > curr_min) {
-  #       curr_min <- razdoblje[1]
-  #     }
-  #     if (razdoblje[2] < curr_max) {
-  #       curr_max <- razdoblje[2]
-  #     }
-  #     paste(gsub(" ", "_", changeTitleName(globalPlotType)),curr_min, curr_max, ".png", sep="_")
-  #   },
-  #   content = function(file) {
-  #     # ggsave(file, renderPlotly(changePlotType(globalPlotType, filtriranaZupanija)), device = "png") # ovo radi al exporta ggplot graf koji ne valja
-  #     # plotly::export(p = ggplotly(changePlotType(globalPlotType, filtriranaZupanija)),
-  #     #                file = file) # deprecated
-  #     # fig <- ggplotly(changePlotType(globalPlotType, filtriranaZupanija)) %>% add_surface()
-  #     # 
-  #     # orca(fig, file) # moras skinut lokalno
-  # 
-  #   }
-  # )
-  
   
 }
 
