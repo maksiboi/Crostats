@@ -467,6 +467,7 @@ ui <- fluidPage(
       h6 {
         font-family: 'Yusei Magic', sans-serif;
         color: black;
+        margin-top: 0;
       }
       .shiny-text-output {
         font-family: 'Roboto', sans-serif;
