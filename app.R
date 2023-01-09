@@ -127,23 +127,25 @@ sjediste <-
     "Zadar"
   )
 
-rodeniNa1000 <- rodeni[-1:-4]/stanovnistvo[-1]*1000
-rodeniNa1000 <- cbind(stanovnistvo[1],rodeniNa1000)
+rodeniNa1000 <- rodeni[-1:-4] / stanovnistvo[-1] * 1000
+rodeniNa1000 <- cbind(stanovnistvo[1], rodeniNa1000)
 
-umrliNa1000 <- umrli[-1:-4]/stanovnistvo[-1]*1000
+umrliNa1000 <- umrli[-1:-4] / stanovnistvo[-1] * 1000
 umrliNa1000 <- cbind(stanovnistvo[1], umrliNa1000)
 
-brakoviNa1000 <- brakovi[-1:-4]/stanovnistvo[-1]*1000
-brakoviNa1000 <- cbind(stanovnistvo[1],brakoviNa1000)
+brakoviNa1000 <- brakovi[-1:-4] / stanovnistvo[-1] * 1000
+brakoviNa1000 <- cbind(stanovnistvo[1], brakoviNa1000)
 
-razvodiNa1000 <- razvodi[-1:-4]/stanovnistvo[-1]*1000
-razvodiNa1000 <- cbind(stanovnistvo[1],razvodiNa1000)
+razvodiNa1000 <- razvodi[-1:-4] / stanovnistvo[-1] * 1000
+razvodiNa1000 <- cbind(stanovnistvo[1], razvodiNa1000)
 
-odseljeniNa1000 <- odseljeni[-1:-3]/stanovnistvo[-1,-1:-11]*1000
-odseljeniNa1000 <- cbind(stanovnistvo[-1,1],odseljeniNa1000)
+odseljeniNa1000 <-
+  odseljeni[-1:-3] / stanovnistvo[-1,-1:-11] * 1000
+odseljeniNa1000 <- cbind(stanovnistvo[-1, 1], odseljeniNa1000)
 
-doseljeniNa1000 <- doseljeni[-1:-3]/stanovnistvo[-1,-1:-11]*1000
-doseljeniNa1000 <- cbind(stanovnistvo[-1,1],doseljeniNa1000)
+doseljeniNa1000 <-
+  doseljeni[-1:-3] / stanovnistvo[-1,-1:-11] * 1000
+doseljeniNa1000 <- cbind(stanovnistvo[-1, 1], doseljeniNa1000)
 
 ### sredjivanje ovih na 1000 stanovnika
 
@@ -295,172 +297,173 @@ set.seed(101)
 
 
 #custom funkcije
-changePlotType <- function(plotType, scaleType, filtriranaZupanija) {
-  if (plotType == 1) {
-    stanovnistvo_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = stanovnistvo, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(
-        axis.text.x = element_text(angle = 45),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
-        panel.border = element_rect(color = "black", fill = NA),
-        legend.background = element_rect(
-          size = 0.5,
-          linetype = "solid",
-          colour = "black"
-        )
-      ) +
-    ylab("Broj stanovništva") 
+changePlotType <-
+  function(plotType, scaleType, filtriranaZupanija) {
+    if (plotType == 1) {
+      stanovnistvo_plot <-
+        ggplot(filtriranaZupanija,
+               aes(x = Godine, y = stanovnistvo, color = Zupanija)) +
+        geom_point() +
+        geom_line(aes(group = 1))  +
+        theme(
+          axis.text.x = element_text(angle = 45),
+          panel.background = element_rect(fill = "white", colour = "grey50"),
+          panel.border = element_rect(color = "black", fill = NA),
+          legend.background = element_rect(
+            size = 0.5,
+            linetype = "solid",
+            colour = "black"
+          )
+        ) +
+        ylab("Broj stanovništva")
       # ggtitle("Broj stanovnika")
-    
-    
-  } else if (plotType == 2) {
-    rodeni_barplot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = rodeni, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(
-        axis.text.x = element_text(angle = 45),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
-        panel.border = element_rect(color = "black", fill = NA),
-        legend.background = element_rect(
-          size = 0.5,
-          linetype = "solid",
-          colour = "black"
-        )
-      ) +
-      if(scaleType == 1) {
-        ylab("Broj rođenih")
-      } else {
-        ylab("Broj rođenih na 1000 stanovnika")
-      }
+      
+      
+    } else if (plotType == 2) {
+      rodeni_barplot <-
+        ggplot(filtriranaZupanija,
+               aes(x = Godine, y = rodeni, color = Zupanija)) +
+        geom_point() +
+        geom_line(aes(group = 1))  +
+        theme(
+          axis.text.x = element_text(angle = 45),
+          panel.background = element_rect(fill = "white", colour = "grey50"),
+          panel.border = element_rect(color = "black", fill = NA),
+          legend.background = element_rect(
+            size = 0.5,
+            linetype = "solid",
+            colour = "black"
+          )
+        ) +
+        if (scaleType == 1) {
+          ylab("Broj rođenih")
+        } else {
+          ylab("Broj rođenih na 1000 stanovnika")
+        }
       # ggtitle("Broj stanovnika")
-    
-    rodeni_barplot %>% ggplotly
-    
-  } else if (plotType == 3) {
-    umrli_barplot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = umrli, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(
-        axis.text.x = element_text(angle = 45),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
-        panel.border = element_rect(color = "black", fill = NA),
-        legend.background = element_rect(
-          size = 0.5,
-          linetype = "solid",
-          colour = "black"
-        )
-      ) +
-       
-    if(scaleType == 1) {
-      ylab("Broj umrlih")
-    } else {
-      ylab("Broj umrlih na 1000 stanovnika")
+      
+      rodeni_barplot %>% ggplotly
+      
+    } else if (plotType == 3) {
+      umrli_barplot <-
+        ggplot(filtriranaZupanija,
+               aes(x = Godine, y = umrli, color = Zupanija)) +
+        geom_point() +
+        geom_line(aes(group = 1))  +
+        theme(
+          axis.text.x = element_text(angle = 45),
+          panel.background = element_rect(fill = "white", colour = "grey50"),
+          panel.border = element_rect(color = "black", fill = NA),
+          legend.background = element_rect(
+            size = 0.5,
+            linetype = "solid",
+            colour = "black"
+          )
+        ) +
+        
+        if (scaleType == 1) {
+          ylab("Broj umrlih")
+        } else {
+          ylab("Broj umrlih na 1000 stanovnika")
+        }
+      # ggtitle("Broj stanovnika")
+      
+      umrli_barplot %>% ggplotly
+      
+      
+    } else if (plotType == 4) {
+      doseljeni_plot <-
+        ggplot(filtriranaZupanija,
+               aes(x = Godine, y = doseljeni, color = Zupanija)) +
+        geom_point() +
+        geom_line(aes(group = 1))  +
+        theme(
+          axis.text.x = element_text(angle = 45),
+          panel.background = element_rect(fill = "white", colour = "grey50"),
+          panel.border = element_rect(color = "black", fill = NA),
+          legend.background = element_rect(
+            size = 0.5,
+            linetype = "solid",
+            colour = "black"
+          )
+        ) +
+        if (scaleType == 1) {
+          ylab("Broj doseljenog stanovništva")
+        } else {
+          ylab("Broj doseljenih na 1000 stanovnika")
+        }
+      # ggtitle("Broj stanovnika")
+      
+    } else if (plotType == 5) {
+      odseljeni_plot <-
+        ggplot(filtriranaZupanija,
+               aes(x = Godine, y = odseljeni, color = Zupanija)) +
+        geom_point() +
+        geom_line(aes(group = 1))  +
+        theme(
+          axis.text.x = element_text(angle = 45),
+          panel.background = element_rect(fill = "white", colour = "grey50"),
+          panel.border = element_rect(color = "black", fill = NA),
+          legend.background = element_rect(
+            size = 0.5,
+            linetype = "solid",
+            colour = "black"
+          )
+        ) +
+        if (FALSE) {
+          ylab("Broj odseljenog stanovništva")
+        } else {
+          ylab("Broj odseljenih na 1000 stanovnika")
+        }
+      # ggtitle("Broj stanovnika")
+    } else if (plotType == 6) {
+      brakovi_plot <-
+        ggplot(filtriranaZupanija,
+               aes(x = Godine, y = brakovi, color = Zupanija)) +
+        geom_point() +
+        geom_line(aes(group = 1))  +
+        theme(
+          axis.text.x = element_text(angle = 45),
+          panel.background = element_rect(fill = "white", colour = "grey50"),
+          panel.border = element_rect(color = "black", fill = NA),
+          legend.background = element_rect(
+            size = 0.5,
+            linetype = "solid",
+            colour = "black"
+          )
+        ) +
+        
+        if (scaleType == 1) {
+          ylab("Broj sklopljenih brakova")
+        } else {
+          ylab("Broj brakova na 1000 stanovnika")
+        }
+      
+    } else if (plotType == 7) {
+      razvodi_plot <-
+        ggplot(filtriranaZupanija,
+               aes(x = Godine, y = razvodi, color = Zupanija)) +
+        geom_point() +
+        geom_line(aes(group = 1))  +
+        theme(
+          axis.text.x = element_text(angle = 45),
+          panel.background = element_rect(fill = "white", colour = "grey50"),
+          panel.border = element_rect(color = "black", fill = NA),
+          legend.background = element_rect(
+            size = 0.5,
+            linetype = "solid",
+            colour = "black"
+          )
+        ) +
+        if (scaleType == 1) {
+          ylab("Broj razvoda")
+        } else {
+          ylab("Broj razvoda na 1000 stanovnika")
+        }
     }
-      # ggtitle("Broj stanovnika")
-    
-    umrli_barplot %>% ggplotly
     
     
-  } else if (plotType == 4) {
-    doseljeni_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = doseljeni, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(
-        axis.text.x = element_text(angle = 45),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
-        panel.border = element_rect(color = "black", fill = NA),
-        legend.background = element_rect(
-          size = 0.5,
-          linetype = "solid",
-          colour = "black"
-        )
-      ) +
-      if(scaleType == 1) {
-        ylab("Broj doseljenog stanovništva")
-      } else {
-        ylab("Broj doseljenih na 1000 stanovnika")
-      }
-      # ggtitle("Broj stanovnika")
-    
-  } else if (plotType == 5) {
-    odseljeni_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = odseljeni, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(
-        axis.text.x = element_text(angle = 45),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
-        panel.border = element_rect(color = "black", fill = NA),
-        legend.background = element_rect(
-          size = 0.5,
-          linetype = "solid",
-          colour = "black"
-        )
-      ) +
-      if(FALSE) {
-        ylab("Broj odseljenog stanovništva")
-      } else {
-        ylab("Broj odseljenih na 1000 stanovnika")
-      }
-      # ggtitle("Broj stanovnika")
-  } else if (plotType == 6) {
-    brakovi_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = brakovi, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(
-        axis.text.x = element_text(angle = 45),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
-        panel.border = element_rect(color = "black", fill = NA),
-        legend.background = element_rect(
-          size = 0.5,
-          linetype = "solid",
-          colour = "black"
-        )
-      ) +
-    
-    if(scaleType == 1) {
-      ylab("Broj sklopljenih brakova") 
-    } else {
-      ylab("Broj brakova na 1000 stanovnika")
-    }
-    
-  } else if (plotType == 7) {
-    razvodi_plot <-
-      ggplot(filtriranaZupanija,
-             aes(x = Godine, y = razvodi, color = Zupanija)) +
-      geom_point() +
-      geom_line(aes(group = 1))  +
-      theme(
-        axis.text.x = element_text(angle = 45),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
-        panel.border = element_rect(color = "black", fill = NA),
-        legend.background = element_rect(
-          size = 0.5,
-          linetype = "solid",
-          colour = "black"
-        )
-      ) + 
-      if(scaleType == 1) {
-        ylab("Broj razvoda") 
-      } else {
-        ylab("Broj razvoda na 1000 stanovnika")
-      }
   }
-  
-  
-}
 
 changeMapCategory <- function(plotType) {
   if (plotType == 1) {
@@ -616,367 +619,373 @@ ui <- fluidPage(
     mainPanel(tmapOutput(outputId = "map", height = 700),
               width = 5),
     sidebarPanel(
-      fluidRow(column(
-        3,
-        selectInput(
-          "selectPrikaz",
-          label = h3("Kategorija:"),
-          choices = list(
-            "Broj stanovnika" = 1,
-            "Rođeni" = 2,
-            "Umrli" = 3,
-            "Doseljeni" = 4,
-            "Odseljeni" = 5,
-            "Sklopljeni brakovi" = 6,
-            "Razvodi" = 7
-          )
-        )
-      ),
-      column(
-        3,
-        selectInput(
+      fluidRow(
+        column(3,
+               selectInput(
+                 "selectPrikaz",
+                 label = h3("Kategorija:"),
+                 choices = list(
+                   "Broj stanovnika" = 1,
+                   "Rođeni" = 2,
+                   "Umrli" = 3,
+                   "Doseljeni" = 4,
+                   "Odseljeni" = 5,
+                   "Sklopljeni brakovi" = 6,
+                   "Razvodi" = 7
+                 )
+               )),
+        column(3,
+               selectInput(
+                 "selectSkala",
+                 label = h3("Skala:"),
+                 choices = list("Apsolutne vrijednosti" = 1)
+                 )),
+               column(
+                 5,
+                 numericRangeInput(
+                   "razdoblje",
+                   label = h3("Razdoblje:"),
+                   # value = c(1998, 2021),
+                   value = c(2001, 2021),
+                   separator = "-"
+                 )
+               )
+        ),
+        fluidRow(column(
+          6,
+          h6("Kliknite na prvu ikonu u zaglavlju prikaza za preuzimanje")
+        )),
+        
+        plotlyOutput("plot"),
+        br(),
+        span(# downloadButton("downloadPlot", "Preuzmite prikaz"),
+          downloadButton("downloadData", "Preuzmite podatke")),
+        
+        h2("Fun Facts", style = "font-size:30px"),
+        span(textOutput("prva"), style = "font-size:20px"),
+        span(textOutput("druga"), style = "font-size:20px"),
+        span(textOutput("treca"), style = "font-size:20px"),
+        span(textOutput("cetvrta"), style = "font-size:20px"),
+        width = 7
+      )
+    )
+  )
+  
+  server <- function(input, output, session) {
+    globalPlotType <- 1
+    
+    globalScaleType <- 1
+    
+    razdoblje <- c(1998, 2021)
+    # razdoblje <- c(2001, 2021)
+    globalOdabraneZupanije <- c("Grad.Zagreb")
+    
+    odabrani <- data.frame()
+    
+    output$prva <- renderText({
+      set.seed(Sys.time())
+      fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
+      odabrani <<- rbind(odabrani, pom)
+      paste("• ", odabrani[1, ]$fact)
+    })
+    
+    filtriranaZupanija <-
+      stanovnistvo1 %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
+                                                                                     Godine <= razdoblje[2])
+    
+    initial_plot <- changePlotType(1, 1, filtriranaZupanija)
+    
+    output$plot <- renderPlotly(initial_plot)
+    
+    output$map <- renderTmap({
+      tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
+        col = "stanovnistvo_2021",
+        popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
+        title = "Broj stanovnika",
+        breaks = c(0, 50000, 100000, 150000, 250000, 450000, 800000)
+      )
+    })
+    
+    #sprjecava dvostruko renderiranje na pocetnom loadanju stranice
+    freeToRender <- F
+    
+    
+    ### KLIK NA DRZAVU
+    observeEvent(input$map_shape_click, {
+      click <- input$map_shape_click
+      novi_id <- click$id
+      
+      set.seed(Sys.time())
+      #osigurava da minimalno 1 zupanija bude odabrana i dodaje novu zupaniju
+      if (novi_id %in% globalOdabraneZupanije &
+          length(globalOdabraneZupanije) > 1) {
+        globalOdabraneZupanije <<-
+          globalOdabraneZupanije[!globalOdabraneZupanije == novi_id]
+        ### ff implementacija
+        odabrani <<- odabrani %>% filter(zupanije_id != novi_id)
+      } else if (novi_id %in% globalOdabraneZupanije &
+                 length(globalOdabraneZupanije) == 1) {
+        
+      } else {
+        globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
+        
+        #### ff implementacija
+        zupanija_visak <- globalOdabraneZupanije[1]
+        set.seed(Sys.time())
+        if (nrow(odabrani) == 4) {
+          odabrani <<- odabrani %>% filter(zupanije_id != zupanija_visak)
+          fun_facts %>% filter(novi_id == zupanije_id) %>% sample_n(1) -> pom
+          odabrani <<- rbind(odabrani, pom)
+        } else {
+          fun_facts %>% filter(novi_id == zupanije_id) %>% sample_n(1) -> pom
+          odabrani <<- rbind(odabrani, pom)
+        }
+      }
+      
+      
+      #implementira da se zupanije ponasaju kao red
+      if (length(globalOdabraneZupanije) >= 5) {
+        globalOdabraneZupanije <<- c(globalOdabraneZupanije[-1])
+      }
+      
+      if (!is.na(odabrani[1, ]$fact)) {
+        output$prva <- renderText({
+          paste("• ", odabrani[1, ]$fact)
+        })
+      } else {
+        output$prva <- renderText({
+          " "
+        })
+      }
+      
+      if (!is.na(odabrani[2, ]$fact)) {
+        output$druga <- renderText({
+          paste("• ", odabrani[2, ]$fact)
+        })
+      } else {
+        output$druga <- renderText({
+          " "
+        })
+      }
+      
+      
+      if (!is.na(odabrani[3, ]$fact)) {
+        output$treca <- renderText({
+          paste("• ", odabrani[3, ]$fact)
+        })
+      } else {
+        output$treca <- renderText({
+          " "
+        })
+      }
+      
+      if (!is.na(odabrani[4, ]$fact)) {
+        output$cetvrta <- renderText({
+          paste("• ", odabrani[4, ]$fact)
+        })
+      } else {
+        output$cetvrta <- renderText({
+          " "
+        })
+      }
+      
+      hr <-
+        hr %>% mutate(bojaj = ifelse(zupanije_id %in% globalOdabraneZupanije,
+                                     Zupanija,
+                                     NA))
+      tmp <- NULL
+      if (globalScaleType == 1) {
+        if (globalPlotType %in% c(2, 3, 6, 7)) {
+          tmp <- umrli_rodeni_brakovi_razvodi
+          # tmp <- umrli_rodeni_brakovi_razvodiNa1000
+        } else if (globalPlotType %in% c(4, 5)) {
+          tmp <- odseljeni_doseljeni
+          # tmp <- odseljeni_doseljeniNa1000
+        } else if (globalPlotType == 1) {
+          tmp <- stanovnistvo1
+        }
+      } else {
+        if (globalPlotType %in% c(2, 3, 6, 7)) {
+          # tmp <- umrli_rodeni_brakovi_razvodi
+          tmp <- umrli_rodeni_brakovi_razvodiNa1000
+        } else if (globalPlotType %in% c(4, 5)) {
+          # tmp <- odseljeni_doseljeni
+          tmp <- odseljeni_doseljeniNa1000
+        } else if (globalPlotType == 1) {
+          tmp <- stanovnistvo1
+        }
+      }
+      
+      filtriranaZupanija <<-
+        tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
+                                                                             Godine <= razdoblje[2])
+      
+      newPlot <-
+        changePlotType(globalPlotType, globalScaleType, filtriranaZupanija)
+      
+      output$plot <- renderPlotly(newPlot)
+    })
+    
+    ### KATEGORIJA
+    observeEvent(input$selectPrikaz, {
+      # kad se aplikacija prvi put loada, ovaj blok se triggera ali nije potrebno izvrsiti ga
+      if (!freeToRender) {
+        freeToRender <<- T
+        return()
+      }
+      
+      globalPlotType <<- as.numeric(input$selectPrikaz)
+      
+      if (globalPlotType != 1) {
+        updateSelectInput(
+          session,
           "selectSkala",
-          label = h3("Skala:"),
           choices = list(
             "Apsolutne vrijednosti" = 1,
             "Vrijednosti po 1000 st." = 2
           )
         )
-      ),
+      }
       
-      column(
-        5,
-        numericRangeInput(
-          "razdoblje",
-          label = h3("Razdoblje:"),
-          # value = c(1998, 2021),
-          value = c(2001, 2021),
-          separator = "-"
-        )
-      )),
-      fluidRow(column(
-        6,
-        h6("Kliknite na prvu ikonu u zaglavlju prikaza za preuzimanje"),
-      )),
-      
-      plotlyOutput("plot"),
-      br(),
-      span(# downloadButton("downloadPlot", "Preuzmite prikaz"),
-        downloadButton("downloadData", "Preuzmite podatke")),
-      
-      h2("Fun Facts", style = "font-size:30px"),
-      span(textOutput("prva"), style = "font-size:20px"),
-      span(textOutput("druga"), style = "font-size:20px"),
-      span(textOutput("treca"), style = "font-size:20px"),
-      span(textOutput("cetvrta"), style = "font-size:20px"),
-      width = 7
-    )
-  )
-)
-
-server <- function(input, output, session) {
-  globalPlotType <- 1
-  
-  globalScaleType <- 1
-  
-  razdoblje <- c(1998, 2021)
-  # razdoblje <- c(2001, 2021)
-  globalOdabraneZupanije <- c("Grad.Zagreb")
-  
-  odabrani <- data.frame()
-  
-  output$prva <- renderText({
-    set.seed(Sys.time())
-    fun_facts %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% sample_n(1) -> pom
-    odabrani <<- rbind(odabrani, pom)
-    paste("• ", odabrani[1, ]$fact)
-  })
-  
-  filtriranaZupanija <-
-    stanovnistvo1 %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
-                                                                                   Godine <= razdoblje[2])
-  
-  initial_plot <- changePlotType(1, 1, filtriranaZupanija)
-  
-  output$plot <- renderPlotly(initial_plot)
-  
-  output$map <- renderTmap({
-    tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
-      col = "stanovnistvo_2021",
-      popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
-      title = "Broj stanovnika",
-      breaks = c(0, 50000, 100000, 150000, 250000, 450000, 800000)
-    )
-  })
-  
-  #sprjecava dvostruko renderiranje na pocetnom loadanju stranice
-  freeToRender <- F
-  
-  
-  ### KLIK NA DRZAVU
-  observeEvent(input$map_shape_click, {
-    click <- input$map_shape_click
-    novi_id <- click$id
-    
-    set.seed(Sys.time())
-    #osigurava da minimalno 1 zupanija bude odabrana i dodaje novu zupaniju
-    if (novi_id %in% globalOdabraneZupanije &
-        length(globalOdabraneZupanije) > 1) {
-      globalOdabraneZupanije <<-
-        globalOdabraneZupanije[!globalOdabraneZupanije == novi_id]
-      ### ff implementacija
-      odabrani <<- odabrani %>% filter(zupanije_id != novi_id)
-    } else if (novi_id %in% globalOdabraneZupanije &
-               length(globalOdabraneZupanije) == 1) {
-      
-    } else {
-      globalOdabraneZupanije <<- c(globalOdabraneZupanije, novi_id)
-      
-      #### ff implementacija
-      zupanija_visak <- globalOdabraneZupanije[1]
-      set.seed(Sys.time())
-      if (nrow(odabrani) == 4) {
-        odabrani <<- odabrani %>% filter(zupanije_id != zupanija_visak)
-        fun_facts %>% filter(novi_id == zupanije_id) %>% sample_n(1) -> pom
-        odabrani <<- rbind(odabrani, pom)
+      tmp <- NULL
+      if (globalScaleType == 1) {
+        if (globalPlotType %in% c(2, 3, 6, 7)) {
+          tmp <- umrli_rodeni_brakovi_razvodi
+          # tmp <- umrli_rodeni_brakovi_razvodiNa1000
+        } else if (globalPlotType %in% c(4, 5)) {
+          tmp <- odseljeni_doseljeni
+          # tmp <- odseljeni_doseljeniNa1000
+        } else if (globalPlotType == 1) {
+          tmp <- stanovnistvo1
+        }
       } else {
-        fun_facts %>% filter(novi_id == zupanije_id) %>% sample_n(1) -> pom
-        odabrani <<- rbind(odabrani, pom)
+        if (globalPlotType %in% c(2, 3, 6, 7)) {
+          # tmp <- umrli_rodeni_brakovi_razvodi
+          tmp <- umrli_rodeni_brakovi_razvodiNa1000
+        } else if (globalPlotType %in% c(4, 5)) {
+          # tmp <- odseljeni_doseljeni
+          tmp <- odseljeni_doseljeniNa1000
+        } else if (globalPlotType == 1) {
+          tmp <- stanovnistvo1
+        }
       }
-    }
-    
-    
-    #implementira da se zupanije ponasaju kao red
-    if (length(globalOdabraneZupanije) >= 5) {
-      globalOdabraneZupanije <<- c(globalOdabraneZupanije[-1])
-    }
-    
-    if (!is.na(odabrani[1, ]$fact)) {
-      output$prva <- renderText({
-        paste("• ", odabrani[1, ]$fact)
+      
+      filtriranaZupanija <<-
+        tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
+                                                                             Godine <= razdoblje[2])
+      
+      changePlotType(globalPlotType, globalScaleType, filtriranaZupanija) -> newPlot
+      
+      output$plot <- renderPlotly(newPlot)
+      
+      #prikaz boja na mapi ovisno o kategoriji
+      currentCol <- changeMapCategory(globalPlotType)
+      currentTitle <- changeTitleName(globalPlotType)
+      currentBreaks <- changeMapBreaks(globalPlotType)
+      tmapProxy("map", session, {
+        tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
+          col = currentCol,
+          popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
+          title = currentTitle,
+          breaks = currentBreaks
+        )
       })
-    } else {
-      output$prva <- renderText({
-        " "
-      })
-    }
-    
-    if (!is.na(odabrani[2, ]$fact)) {
-      output$druga <- renderText({
-        paste("• ", odabrani[2, ]$fact)
-      })
-    } else {
-      output$druga <- renderText({
-        " "
-      })
-    }
-    
-    
-    if (!is.na(odabrani[3, ]$fact)) {
-      output$treca <- renderText({
-        paste("• ", odabrani[3, ]$fact)
-      })
-    } else {
-      output$treca <- renderText({
-        " "
-      })
-    }
-    
-    if (!is.na(odabrani[4, ]$fact)) {
-      output$cetvrta <- renderText({
-        paste("• ", odabrani[4, ]$fact)
-      })
-    } else {
-      output$cetvrta <- renderText({
-        " "
-      })
-    }
-    
-    hr <-
-      hr %>% mutate(bojaj = ifelse(zupanije_id %in% globalOdabraneZupanije,
-                                   Zupanija,
-                                   NA))
-    tmp <- NULL  
-    if (globalScaleType == 1) {
-      if (globalPlotType %in% c(2, 3, 6, 7)) {
-        tmp <- umrli_rodeni_brakovi_razvodi
-        # tmp <- umrli_rodeni_brakovi_razvodiNa1000
-      } else if (globalPlotType %in% c(4, 5)) {
-        tmp <- odseljeni_doseljeni
-        # tmp <- odseljeni_doseljeniNa1000
-      } else if (globalPlotType == 1) {
-        tmp <- stanovnistvo1
-      }
-    } else {
-      if (globalPlotType %in% c(2, 3, 6, 7)) {
-        # tmp <- umrli_rodeni_brakovi_razvodi
-        tmp <- umrli_rodeni_brakovi_razvodiNa1000
-      } else if (globalPlotType %in% c(4, 5)) {
-        # tmp <- odseljeni_doseljeni
-        tmp <- odseljeni_doseljeniNa1000
-      } else if (globalPlotType == 1) {
-        tmp <- stanovnistvo1
-      }
-    }
-    
-    filtriranaZupanija <<-
-      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
-                                                                           Godine <= razdoblje[2])
-    
-    newPlot <- changePlotType(globalPlotType,globalScaleType, filtriranaZupanija)
-    
-    output$plot <- renderPlotly(newPlot)
-  })
-  
-  ### KATEGORIJA
-  observeEvent(input$selectPrikaz, {
-    # kad se aplikacija prvi put loada, ovaj blok se triggera ali nije potrebno izvrsiti ga
-    if (!freeToRender) {
-      freeToRender <<- T
-      return()
-    }
-    
-    globalPlotType <<- as.numeric(input$selectPrikaz)
-    
-    tmp <- NULL  
-    if (globalScaleType == 1) {
-      if (globalPlotType %in% c(2, 3, 6, 7)) {
-        tmp <- umrli_rodeni_brakovi_razvodi
-        # tmp <- umrli_rodeni_brakovi_razvodiNa1000
-      } else if (globalPlotType %in% c(4, 5)) {
-        tmp <- odseljeni_doseljeni
-        # tmp <- odseljeni_doseljeniNa1000
-      } else if (globalPlotType == 1) {
-        tmp <- stanovnistvo1
-      }
-    } else {
-      if (globalPlotType %in% c(2, 3, 6, 7)) {
-        # tmp <- umrli_rodeni_brakovi_razvodi
-        tmp <- umrli_rodeni_brakovi_razvodiNa1000
-      } else if (globalPlotType %in% c(4, 5)) {
-        # tmp <- odseljeni_doseljeni
-        tmp <- odseljeni_doseljeniNa1000
-      } else if (globalPlotType == 1) {
-        tmp <- stanovnistvo1
-      }
-    }
-    
-    filtriranaZupanija <<-
-      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
-                                                                           Godine <= razdoblje[2])
-    
-    changePlotType(globalPlotType, globalScaleType, filtriranaZupanija) -> newPlot
-    
-    output$plot <- renderPlotly(newPlot)
-    
-    #prikaz boja na mapi ovisno o kategoriji
-    currentCol <- changeMapCategory(globalPlotType)
-    currentTitle <- changeTitleName(globalPlotType)
-    currentBreaks <- changeMapBreaks(globalPlotType)
-    tmapProxy("map", session, {
-      tm_shape(hr) + tm_borders() + tm_layout(title = "Republika Hrvatska") + tm_polygons(
-        col = currentCol,
-        popup.vars = c("Sjediste" = "SjedisteZupanije", "Broj stanovnika" = "brojStanovnika"),
-        title = currentTitle,
-        breaks = currentBreaks
-      )
     })
-  })
-  
-  ### SKALA
-  observeEvent(input$selectSkala, {
-    # kad se aplikacija prvi put loada, ovaj blok se triggera ali nije potrebno izvrsiti ga
-    if (!freeToRender) {
-      freeToRender <<- T
-      return()
-    }
-    globalScaleType <<- as.numeric(input$selectSkala)
     
-    tmp <- NULL  
-    if (globalScaleType == 1) {
-      if (globalPlotType %in% c(2, 3, 6, 7)) {
-        tmp <- umrli_rodeni_brakovi_razvodi
-        # tmp <- umrli_rodeni_brakovi_razvodiNa1000
-      } else if (globalPlotType %in% c(4, 5)) {
-        tmp <- odseljeni_doseljeni
-        # tmp <- odseljeni_doseljeniNa1000
-      } else if (globalPlotType == 1) {
-        tmp <- stanovnistvo1
+    ### SKALA
+    observeEvent(input$selectSkala, {
+      # kad se aplikacija prvi put loada, ovaj blok se triggera ali nije potrebno izvrsiti ga
+      if (!freeToRender) {
+        freeToRender <<- T
+        return()
       }
-    } else {
-      if (globalPlotType %in% c(2, 3, 6, 7)) {
-        # tmp <- umrli_rodeni_brakovi_razvodi
-        tmp <- umrli_rodeni_brakovi_razvodiNa1000
-      } else if (globalPlotType %in% c(4, 5)) {
-        # tmp <- odseljeni_doseljeni
-        tmp <- odseljeni_doseljeniNa1000
-      } else if (globalPlotType == 1) {
-        tmp <- stanovnistvo1
+      globalScaleType <<- as.numeric(input$selectSkala)
+      
+      tmp <- NULL
+      if (globalScaleType == 1) {
+        if (globalPlotType %in% c(2, 3, 6, 7)) {
+          tmp <- umrli_rodeni_brakovi_razvodi
+          # tmp <- umrli_rodeni_brakovi_razvodiNa1000
+        } else if (globalPlotType %in% c(4, 5)) {
+          tmp <- odseljeni_doseljeni
+          # tmp <- odseljeni_doseljeniNa1000
+        } else if (globalPlotType == 1) {
+          tmp <- stanovnistvo1
+        }
+      } else {
+        if (globalPlotType %in% c(2, 3, 6, 7)) {
+          # tmp <- umrli_rodeni_brakovi_razvodi
+          tmp <- umrli_rodeni_brakovi_razvodiNa1000
+        } else if (globalPlotType %in% c(4, 5)) {
+          # tmp <- odseljeni_doseljeni
+          tmp <- odseljeni_doseljeniNa1000
+        } else if (globalPlotType == 1) {
+          tmp <- stanovnistvo1
+        }
       }
-    }
+      
+      filtriranaZupanija <<-
+        tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
+                                                                             Godine <= razdoblje[2])
+      
+      changePlotType(globalPlotType, globalScaleType, filtriranaZupanija) -> newPlot
+      
+      output$plot <- renderPlotly(newPlot)
+    })
     
-    filtriranaZupanija <<-
-      tmp %>% filter(zupanije_id %in% globalOdabraneZupanije) %>% filter(Godine >= razdoblje[1] &
-                                                                           Godine <= razdoblje[2])
+    ### RAZDOBLJE
+    observeEvent(input$razdoblje, {
+      if (globalScaleType == 1) {
+        razdoblje[1] <<-
+          ifelse(
+            is.na(input$razdoblje[1]),
+            1998,
+            # 2001,
+            ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1])
+          )
+        razdoblje[2] <<-
+          ifelse(
+            is.na(input$razdoblje[2]),
+            2021,
+            ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2])
+            # ifelse(input$razdoblje[2] < 2001, 2001, input$razdoblje[2])
+          )
+      } else {
+        razdoblje[1] <<-
+          ifelse(
+            is.na(input$razdoblje[1]),
+            # 1998,
+            2001,
+            ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1])
+          )
+        razdoblje[2] <<-
+          ifelse(
+            is.na(input$razdoblje[2]),
+            2021,
+            # ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2])
+            ifelse(input$razdoblje[2] < 2001, 2001, input$razdoblje[2])
+          )
+      }
+      
+      razdoblje <<- sort(razdoblje)
+      
+      filtriranaZupanija <-
+        filtriranaZupanija %>% filter(Godine >= razdoblje[1] &
+                                        Godine <= razdoblje[2])
+      
+      changePlotType(globalPlotType, globalScaleType, filtriranaZupanija) -> newPlot
+      output$plot <- renderPlotly(newPlot)
+    })
     
-    changePlotType(globalPlotType, globalScaleType, filtriranaZupanija) -> newPlot
+    output$downloadData <- downloadHandler(
+      filename = function() {
+        paste(gsub(" ", "_", changeTitleName(globalPlotType)), ".csv", sep = "")
+      },
+      content = function(file) {
+        write.csv(changeData(globalPlotType, globalScaleType), file)
+      }
+    )
     
-    output$plot <- renderPlotly(newPlot)
-  })
+  }
   
-  ### RAZDOBLJE
-  observeEvent(input$razdoblje, {
-    if (globalScaleType == 1) {
-    razdoblje[1] <<-
-      ifelse(
-        is.na(input$razdoblje[1]),
-        1998,
-        # 2001,
-        ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1])
-      )
-    razdoblje[2] <<-
-      ifelse(
-        is.na(input$razdoblje[2]),
-        2021,
-        ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2])
-        # ifelse(input$razdoblje[2] < 2001, 2001, input$razdoblje[2])
-      )
-    } else {
-      razdoblje[1] <<-
-        ifelse(
-          is.na(input$razdoblje[1]),
-          # 1998,
-          2001,
-          ifelse(input$razdoblje[1] > 2021, 2021, input$razdoblje[1])
-        )
-      razdoblje[2] <<-
-        ifelse(
-          is.na(input$razdoblje[2]),
-          2021,
-          # ifelse(input$razdoblje[2] < 1998, 1998, input$razdoblje[2])
-          ifelse(input$razdoblje[2] < 2001, 2001, input$razdoblje[2])
-        )
-    }
-    
-    razdoblje <<- sort(razdoblje)
-    
-    filtriranaZupanija <-
-      filtriranaZupanija %>% filter(Godine >= razdoblje[1] &
-                                      Godine <= razdoblje[2])
-    
-    changePlotType(globalPlotType, globalScaleType, filtriranaZupanija) -> newPlot
-    output$plot <- renderPlotly(newPlot)
-  })
-  
-  output$downloadData <- downloadHandler(
-    filename = function() {
-      paste(gsub(" ", "_", changeTitleName(globalPlotType)), ".csv", sep = "")
-    },
-    content = function(file) {
-      write.csv(changeData(globalPlotType, globalScaleType), file)
-    }
-  )
-  
-}
-
-shinyApp(ui = ui, server = server)
+  shinyApp(ui = ui, server = server)
