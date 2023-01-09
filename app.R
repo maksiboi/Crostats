@@ -845,6 +845,15 @@ ui <- fluidPage(
             "Vrijednosti po 1000 st." = 2
           )
         )
+      } else if (globalPlotType == 1) {
+        globalScaleType <<- 1
+        updateSelectInput(
+          session,
+          "selectSkala",
+          choices = list(
+            "Apsolutne vrijednosti" = 1
+          )
+        )
       }
       
       tmp <- NULL
