@@ -836,6 +836,8 @@ ui <- fluidPage(
       
       globalPlotType <<- as.numeric(input$selectPrikaz)
       
+      # broj stanovnika nema prikaz na 1000 stanovnika dok ostale kategorije imaju
+      # ovaj blok osigurava da su uvijek prikazane ispravne skale
       if (globalPlotType != 1) {
         updateSelectInput(
           session,
