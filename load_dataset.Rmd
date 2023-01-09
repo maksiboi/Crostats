@@ -34,6 +34,24 @@ razvodi
 egradani
 doseljeni
 odseljeni
+# 
+# rodeniNa1000 <- rodeni[-1:-4]/stanovnistvo[-1]*1000
+# rodeniNa1000 <- cbind(stanovnistvo[1],rodeniNa1000)
+# 
+# umrliNa1000 <- umrli[-1:-4]/stanovnistvo[-1]*1000
+# umrliNa1000 <- cbind(stanovnistvo[1], umrliNa1000)
+# 
+# brakoviNa1000 <- brakovi[-1:-4]/stanovnistvo[-1]*1000
+# brakoviNa1000 <- cbind(stanovnistvo[1],brakoviNa1000)
+# 
+# razvodiNa1000 <- razvodi[-1:-4]/stanovnistvo[-1]*1000
+# razvodiNa1000 <- cbind(stanovnistvo[1],razvodiNa1000)
+# 
+# odseljeniNa1000 <- odseljeni[-1:-3]/stanovnistvo[-1,-1:-11]*1000
+# odseljeniNa1000 <- cbind(stanovnistvo[-1,1],odseljeniNa1000)
+# 
+# doseljeniNa1000 <- doseljeni[-1:-3]/stanovnistvo[-1,-1:-11]*1000
+# doseljeniNa1000 <- cbind(stanovnistvo[-1,1],doseljeniNa1000)
 
 rodeniNa1000 <- rodeni[-1:-4]/stanovnistvo[-1]*1000
 rodeniNa1000 <- cbind(stanovnistvo[1],rodeniNa1000)
@@ -52,4 +70,48 @@ odseljeniNa1000 <- cbind(stanovnistvo[-1,1],odseljeniNa1000)
 
 doseljeniNa1000 <- doseljeni[-1:-3]/stanovnistvo[-1,-1:-11]*1000
 doseljeniNa1000 <- cbind(stanovnistvo[-1,1],doseljeniNa1000)
+
+zupanije_id <-
+  c(
+    "Grad.Zagreb",
+    "Medimurska",
+    "Krapinsko.zagorska",
+    "Varazdinska",
+    "Viroviticko.podravska",
+    "Pozesko.slavonska",
+    "Koprivnicko.krizevacka",
+    "Bjelovarsko.bilogorska",
+    "Vukovarsko.srijemska",
+    "Brodsko.posavska",
+    "Karlovacka",
+    "Osjecko.baranjska",
+    "Sisacko.moslavacka",
+    "Licko.senjska",
+    "Istarska",
+    "Zagrebacka",
+    "Sibensko.kninska",
+    "Dubrovacko.neretvanska",
+    "Splitsko.dalmatinska",
+    "Primorsko.goranska",
+    "Zadarska"
+  )
+
+# rodeni <- cbind(zupanije_id, rodeni[-1,])
+# rodeni1 <-
+#   pivot_longer(rodeni,
+#                "2001":"2021" ,
+#                names_to = "Godine",
+#                values_to = "rodeni")
+
+rodeniNa1000 <- cbind(zupanije_id, rodeniNa1000[-1,])
+rodeniNa1000a <-
+  pivot_longer(rodeniNa1000,
+               "2001":"2021" ,
+               names_to = "Godine",
+               values_to = "rodeni")
+
+doseljeniNa1000
+
+brakoviNa1000
+doseljeni
 ```
