@@ -10,7 +10,8 @@ download required files
 
 set the proper working directory
 
-urediti poslije ovisno o formatu kojim treba pisati, ali:
+
+
 Za procjene stanovnistva:
 
 1. Za razdoblje od 2001. do 2010. dana je revizija procjena broja stanovnika koje su izračunane na temelju podataka Popisa 2011.
