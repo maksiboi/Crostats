@@ -845,7 +845,8 @@ ui <- fluidPage(
           choices = list(
             "Apsolutne vrijednosti" = 1,
             "Vrijednosti po 1000 st." = 2
-          )
+          ),
+          selected = ifelse(globalScaleType == 1, list("Apsolutne vrijednosti" = 1), list("Vrijednosti po 1000 st." = 2))
         )
       } else if (globalPlotType == 1) {
         globalScaleType <<- 1
